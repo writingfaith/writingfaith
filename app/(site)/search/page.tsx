@@ -35,7 +35,7 @@ function SearchForm({ initialQuery }: { initialQuery?: string }) {
       >
         Search essays by word or phrase
       </label>
-      <div className="mt-3 flex max-w-xl gap-3">
+      <div className="mt-3 flex max-w-xl flex-col gap-3 sm:flex-row">
         <input
           id="search-input"
           type="search"
@@ -47,7 +47,7 @@ function SearchForm({ initialQuery }: { initialQuery?: string }) {
         />
         <button
           type="submit"
-          className="btn shrink-0"
+          className="btn w-full shrink-0 sm:w-auto"
         >
           Search
         </button>

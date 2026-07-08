@@ -20,7 +20,7 @@ export function SignInForm() {
       >
         Email address
       </label>
-      <div className="mt-3 flex max-w-xl gap-3">
+      <div className="mt-3 flex max-w-xl flex-col gap-3 sm:flex-row">
         <input
           id="signin-email"
           type="email"
@@ -30,17 +30,17 @@ export function SignInForm() {
           placeholder="you@example.com"
           className="field"
         />
-        <button type="submit" disabled={pending} className="btn btn-primary shrink-0">
+        <button type="submit" disabled={pending} className="btn btn-primary w-full shrink-0 sm:w-auto">
           {pending ? "Sending…" : "Email me a link"}
         </button>
       </div>
-      <p
-        aria-live="polite"
-        role={state.error ? "alert" : undefined}
-        className="mt-4 min-h-5 font-sans text-sm text-ink-muted"
-      >
-        {state.error}
-      </p>
+      <div aria-live="polite" className="max-w-xl">
+        {state.error && (
+          <p role="alert" className="form-msg form-msg--error">
+            {state.error}
+          </p>
+        )}
+      </div>
     </form>
   );
 }

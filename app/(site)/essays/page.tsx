@@ -34,8 +34,8 @@ export default async function EssaysPage() {
         <header className="reveal mx-auto max-w-2xl text-center">
           <p className="eyebrow">The archive</p>
           <h1 className="title mt-5">
-            Essays on faith, written{" "}
-            <em className="text-accent">slowly</em>.
+            Essays on scripture, doubt, hope, and{" "}
+            <em className="text-accent">grace</em>.
           </h1>
         </header>
         {categories.length > 0 && (

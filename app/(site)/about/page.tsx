@@ -38,7 +38,8 @@ export default async function AboutPage() {
       eyebrow="About"
       title={
         <>
-          Written slowly, <em className="text-accent">for reading slowly</em>.
+          Faith, examined honestly and{" "}
+          <em className="text-accent">written well</em>.
         </>
       }
     >
@@ -48,10 +49,24 @@ export default async function AboutPage() {
         ordinary places where belief is actually lived.
       </p>
       <p>
-        These are not hot takes. Each essay is written slowly and meant to be
-        read the same way — which is why this site has no feeds to refresh, no
-        pop-ups, no tracking, and nothing that blinks. Just words, set with
-        care, in a room with good light.
+        Each essay is researched, considered, and edited before it is
+        published. There are no hot takes here, no pop-ups, no tracking, and
+        no engagement bait — just carefully made writing, presented the way
+        long-form deserves to be read.
+      </p>
+      <h2>What to expect</h2>
+      <p>
+        Essays fall broadly into three kinds: close readings of scripture,
+        honest explorations of doubt and difficulty, and reflections on faith
+        in ordinary life. New essays are published as they are ready rather
+        than on a content schedule — quality over cadence.
+      </p>
+      <h2>How to follow</h2>
+      <p>
+        The simplest way is the free email newsletter: one email when a new
+        essay is published, with a one-click unsubscribe in every message. If
+        you prefer a feed reader, a full-content RSS feed is available. Both
+        are explained on the follow page.
       </p>
       <p>
         Essays here come from one person’s walk of faith. They are offered as

@@ -34,6 +34,7 @@
   --accent: #8a5a2b;
   --accent-strong: #6f4720;
   --on-accent: #fdf9f1;
+  --danger: #8f2f1e;
 
   --font-serif: var(--font-newsreader), "Iowan Old Style", Georgia, serif;
   --font-sans: var(--font-instrument), "Avenir Next", "Segoe UI", sans-serif;
@@ -67,6 +68,7 @@
     --accent: #c99a5e;
     --accent-strong: #ddb27f;
     --on-accent: #1c1610;
+    --danger: #e59a86;
   }
 }
 
@@ -171,7 +173,12 @@ body::after {
   transition:
     color 0.25s ease,
     border-color 0.25s ease,
-    background-color 0.25s ease;
+    background-color 0.25s ease,
+    transform 0.12s ease;
+}
+
+.btn:active {
+  transform: scale(0.98);
 }
 
 .btn:hover {
@@ -197,17 +204,19 @@ body::after {
   color: var(--on-accent);
 }
 
-/* Text field: a hairline that wakes up. */
+/* Text field: contained, calm, unmistakably interactive. */
 .field {
   width: 100%;
-  background: transparent;
-  border: 0;
-  border-bottom: 1px solid var(--rule-strong);
-  padding: 0.55rem 0;
+  background: var(--paper-raised);
+  border: 1px solid var(--rule-strong);
+  border-radius: 3px;
+  padding: 0.7rem 0.95rem;
   font-family: var(--font-serif);
-  font-size: 1.125rem;
+  font-size: 1.0625rem;
   color: var(--ink);
-  transition: border-color 0.25s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .field::placeholder {
@@ -218,6 +227,37 @@ body::after {
 .field:focus {
   outline: none;
   border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 18%, transparent);
+}
+
+/* Form status blocks: success and error, never color-only. */
+.form-msg {
+  margin-top: 1rem;
+  padding: 0.7rem 0.95rem;
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  text-align: left;
+  border: 1px solid;
+  border-radius: 3px;
+}
+
+.form-msg--success {
+  color: var(--accent-strong);
+  border-color: color-mix(in oklab, var(--accent) 40%, transparent);
+  background: color-mix(in oklab, var(--accent) 7%, transparent);
+}
+
+.form-msg--error {
+  color: var(--danger);
+  border-color: color-mix(in oklab, var(--danger) 45%, transparent);
+  background: color-mix(in oklab, var(--danger) 7%, transparent);
+}
+
+.form-help {
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  color: var(--ink-faint);
 }
 
 /* The recurring mark: hairline — bronze diamond — hairline. */

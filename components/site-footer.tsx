@@ -30,8 +30,9 @@ export async function SiteFooter() {
               Writing<span className="italic text-accent">Faith</span>
             </p>
             <p className="mt-3 font-sans text-sm leading-relaxed text-ink-faint">
-              Essays on Christian faith by Veruschka Pestano. Written slowly,
-              for reading slowly.
+              Independent essays on Christian faith by Veruschka Pestano —
+              scripture, doubt, hope, and grace, explored with honesty and
+              care.
             </p>
           </div>
           <nav aria-label="Footer" className="flex gap-16">
@@ -76,9 +77,27 @@ export async function SiteFooter() {
           </nav>
         </div>
         <Ornament className="mt-12" />
-        <p className="mt-6 text-center font-sans text-sm text-ink-faint">
-          © {new Date().getFullYear()} Veruschka Pestano. All rights reserved.
-        </p>
+        <div className="mt-6 flex flex-col items-center gap-4 font-sans text-sm text-ink-faint sm:flex-row sm:justify-between">
+          <p>© {new Date().getFullYear()} WritingFaith. All rights reserved.</p>
+          <nav aria-label="Legal">
+            <ul className="flex flex-wrap justify-center gap-x-5 gap-y-2">
+              {[
+                { href: "/privacy", label: "Privacy Policy" },
+                { href: "/terms", label: "Terms of Service" },
+                { href: "/disclaimer", label: "Disclaimer" },
+              ].map((item) => (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    className="text-ink-faint no-underline transition-colors hover:text-ink"
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </div>
       </div>
     </footer>
   );

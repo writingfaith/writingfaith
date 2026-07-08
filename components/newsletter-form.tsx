@@ -16,14 +16,17 @@ export function NewsletterForm({ centered = false }: { centered?: boolean }) {
   );
 
   return (
-    <form action={formAction} className={centered ? "mx-auto mt-8 max-w-md" : "mt-8 max-w-md"}>
+    <form
+      action={formAction}
+      className={`${centered ? "mx-auto" : ""} mt-8 max-w-md text-left`}
+    >
       <label
         htmlFor="newsletter-email"
-        className={`block font-sans text-sm text-ink-muted ${centered ? "sr-only" : ""}`}
+        className="block font-sans text-sm font-medium text-ink-muted"
       >
         Email address
       </label>
-      <div className={`flex gap-3 ${centered ? "" : "mt-3"}`}>
+      <div className="mt-2 flex flex-col gap-3 sm:flex-row">
         <input
           id="newsletter-email"
           type="email"
@@ -31,6 +34,7 @@ export function NewsletterForm({ centered = false }: { centered?: boolean }) {
           required
           autoComplete="email"
           placeholder="you@example.com"
+          aria-describedby="newsletter-help"
           className="field"
         />
         {/* Honeypot: hidden from people (and assistive tech), tempting to bots. */}
@@ -42,16 +46,26 @@ export function NewsletterForm({ centered = false }: { centered?: boolean }) {
           aria-hidden="true"
           className="hidden"
         />
-        <button type="submit" disabled={pending} className="btn btn-primary shrink-0">
+        <button
+          type="submit"
+          disabled={pending}
+          className="btn btn-primary w-full shrink-0 sm:w-auto"
+        >
           {pending ? "Sending…" : "Subscribe"}
         </button>
       </div>
-      <p
-        aria-live="polite"
-        className={`mt-4 min-h-5 font-sans text-sm ${state.ok ? "text-accent-strong" : "text-ink-muted"}`}
-      >
-        {state.message}
+      <p id="newsletter-help" className="form-help mt-2.5">
+        Free, no spam. Unsubscribe anytime with one click.
       </p>
+      <div aria-live="polite">
+        {state.message && (
+          <p
+            className={`form-msg ${state.ok ? "form-msg--success" : "form-msg--error"}`}
+          >
+            {state.message}
+          </p>
+        )}
+      </div>
     </form>
   );
 }

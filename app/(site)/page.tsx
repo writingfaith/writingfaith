@@ -55,9 +55,9 @@ export default async function HomePage() {
             <em className="text-accent">Christ</em> in an unquiet world.
           </h1>
           <p className="reveal-3 mx-auto mt-8 max-w-[46ch] leading-relaxed text-ink-muted">
-            Long-form essays on scripture, doubt, hope, and the ordinary
-            places where faith is lived — by Veruschka Pestano. Written
-            slowly, for reading slowly.
+            Long-form essays on Christian faith — scripture, prayer,
+            doubt, and hope — by Veruschka Pestano. Free to read, with new
+            essays delivered by email to subscribers.
           </p>
           <div className="reveal-4 mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-4">
             <Link href="/essays" className="btn btn-primary no-underline">
@@ -82,6 +82,49 @@ export default async function HomePage() {
             </section>
           </>
         )}
+      </div>
+
+      {/* What the publication covers. */}
+      <div className="mx-auto max-w-4xl px-6">
+        <section
+          aria-labelledby="topics-heading"
+          className="reveal-scroll border-t border-rule py-14 sm:py-16"
+        >
+          <h2 id="topics-heading" className="eyebrow">
+            What you’ll find here
+          </h2>
+          <div className="mt-8 grid gap-10 sm:grid-cols-3 sm:gap-8">
+            <div>
+              <h3 className="font-serif text-xl tracking-tight">
+                Scripture, read closely
+              </h3>
+              <p className="mt-3 text-[0.98em] leading-relaxed text-ink-muted">
+                Careful readings that sit with a passage long enough to hear
+                it — taking the text seriously without flattening it into a
+                slogan.
+              </p>
+            </div>
+            <div>
+              <h3 className="font-serif text-xl tracking-tight">
+                Honest questions
+              </h3>
+              <p className="mt-3 text-[0.98em] leading-relaxed text-ink-muted">
+                Doubt is not the opposite of faith. These essays make room
+                for uncertainty, grief, and the questions most sermons skip.
+              </p>
+            </div>
+            <div>
+              <h3 className="font-serif text-xl tracking-tight">
+                Ordinary life
+              </h3>
+              <p className="mt-3 text-[0.98em] leading-relaxed text-ink-muted">
+                Faith as it is actually lived — at kitchen tables and bus
+                stops, where belief is tested and, sometimes quietly,
+                renewed.
+              </p>
+            </div>
+          </div>
+        </section>
       </div>
 
       {/* A verse to slow down with. */}
@@ -150,9 +193,9 @@ export default async function HomePage() {
             Essays by email
           </h2>
           <p className="mx-auto mt-4 max-w-[44ch] leading-relaxed text-ink-muted">
-            One email when a new essay is published — nothing else, ever.
-            We’ll send a confirmation first, and every email has a one-click
-            unsubscribe.
+            One considered email when a new essay is published — most months
+            that’s one or two. Free, no spam, and every email ends with a
+            one-click unsubscribe.
           </p>
           <NewsletterForm centered />
         </section>
