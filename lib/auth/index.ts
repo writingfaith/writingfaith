@@ -35,6 +35,10 @@ const googleConfigured = Boolean(
 );
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  // This app is deployed behind Vercel's trusted host/proxy layer. Setting this
+  // explicitly also keeps local production smoke tests from failing with
+  // Auth.js UntrustedHost errors when using localhost/127.0.0.1.
+  trustHost: true,
   adapter: DrizzleAdapter(db, {
     usersTable: users,
     accountsTable: accounts,

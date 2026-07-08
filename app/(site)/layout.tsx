@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 
+import { SiteFooter } from "@/components/site-footer";
+import { SiteHeader } from "@/components/site-header";
 import { absoluteUrl, siteName } from "@/lib/site";
 
 /**
@@ -20,5 +22,19 @@ export const metadata: Metadata = {
 export default function SiteLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  return children;
+  return (
+    <>
+      <a
+        href="#content"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-6 focus:top-6 focus:z-50 focus:bg-paper-raised focus:px-4 focus:py-2 focus:font-sans focus:text-sm"
+      >
+        Skip to content
+      </a>
+      <SiteHeader />
+      <main id="content" className="flex-1">
+        {children}
+      </main>
+      <SiteFooter />
+    </>
+  );
 }

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { connection } from "next/server";
 
 import { auth } from "@/lib/auth";
 
@@ -8,6 +9,7 @@ import { auth } from "@/lib/auth";
  * keeps its static shell and this link streams in.
  */
 export async function AccountNav() {
+  await connection();
   const session = await auth();
   const signedIn = Boolean(session?.user);
 

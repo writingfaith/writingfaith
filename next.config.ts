@@ -47,6 +47,7 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   cacheComponents: true,
+  poweredByHeader: false,
   async headers() {
     return [
       {

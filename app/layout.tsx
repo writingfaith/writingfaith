@@ -2,9 +2,8 @@ import type { Metadata } from "next";
 import { Newsreader, Instrument_Sans } from "next/font/google";
 import { draftMode } from "next/headers";
 import { VisualEditing } from "next-sanity/visual-editing";
+import { Suspense } from "react";
 import { DraftModeBanner } from "@/components/draft-mode-banner";
-import { SiteHeader } from "@/components/site-header";
-import { SiteFooter } from "@/components/site-footer";
 import { siteDescription, siteName, siteTitle, siteUrl } from "@/lib/site";
 import "./globals.css";
 
@@ -38,36 +37,33 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function RootLayout({
+async function DraftModeTools() {
+  const { isEnabled } = await draftMode();
+  if (!isEnabled) return null;
+
+  return (
+    <>
+      <DraftModeBanner />
+      <VisualEditing />
+    </>
+  );
+}
+
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { isEnabled: isDraftMode } = await draftMode();
-
   return (
     <html
       lang="en"
       className={`${newsreader.variable} ${instrumentSans.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
-        <a
-          href="#content"
-          className="sr-only focus:not-sr-only focus:absolute focus:left-6 focus:top-6 focus:z-50 focus:bg-paper-raised focus:px-4 focus:py-2 focus:font-sans focus:text-sm"
-        >
-          Skip to content
-        </a>
-        <SiteHeader />
-        <main id="content" className="flex-1">
-          {children}
-        </main>
-        <SiteFooter />
-        {isDraftMode && (
-          <>
-            <DraftModeBanner />
-            <VisualEditing />
-          </>
-        )}
+        {children}
+        <Suspense fallback={null}>
+          <DraftModeTools />
+        </Suspense>
       </body>
     </html>
   );

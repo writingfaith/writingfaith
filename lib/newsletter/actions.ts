@@ -52,6 +52,7 @@ export async function subscribeToNewsletter(
   }
 
   try {
+    const resend = getResend();
     const [existing] = await db
       .select()
       .from(newsletterSubscriptions)
@@ -76,7 +77,7 @@ export async function subscribeToNewsletter(
       confirmUrl: absoluteUrl(`/newsletter/confirm?token=${token}`),
       unsubscribeUrl: absoluteUrl(`/newsletter/unsubscribe?token=${token}`),
     });
-    const { error } = await getResend().emails.send({
+    const { error } = await resend.emails.send({
       from: emailFrom,
       to: email,
       subject,
