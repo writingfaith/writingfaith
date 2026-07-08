@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { googleConfigured } from "@/lib/auth";
 import { signInWithGoogle } from "@/lib/auth/actions";
@@ -23,6 +24,13 @@ export default function SignInPage() {
         <p className="mt-6 max-w-prose text-ink-muted">
           Enter your email address and we’ll send a one-time sign-in link.
           A free account lets you manage your newsletter subscription.
+        </p>
+        <p className="mt-3 max-w-prose font-sans text-sm text-ink-faint">
+          Just want new essays by email? You don’t need an account —{" "}
+          <Link href="/feed" className="link">
+            join the newsletter
+          </Link>
+          .
         </p>
 
         <SignInForm />

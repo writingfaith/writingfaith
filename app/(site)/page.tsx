@@ -48,18 +48,18 @@ export default async function HomePage() {
 
       {/* Hero — centered, lit faintly from above. */}
       <section className="hero-wash">
-        <div className="reveal mx-auto max-w-3xl px-6 pb-20 pt-24 text-center sm:pb-28 sm:pt-32">
-          <p className="eyebrow">Essays on faith</p>
-          <h1 className="display mx-auto mt-7 max-w-[18ch]">
+        <div className="mx-auto max-w-3xl px-6 pb-20 pt-24 text-center sm:pb-28 sm:pt-32">
+          <p className="reveal-1 eyebrow">Essays on faith</p>
+          <h1 className="reveal-2 display mx-auto mt-7 max-w-[18ch]">
             Quiet reflections on following{" "}
             <em className="text-accent">Christ</em> in an unquiet world.
           </h1>
-          <p className="mx-auto mt-8 max-w-[46ch] leading-relaxed text-ink-muted">
+          <p className="reveal-3 mx-auto mt-8 max-w-[46ch] leading-relaxed text-ink-muted">
             Long-form essays on scripture, doubt, hope, and the ordinary
             places where faith is lived — by Veruschka Pestano. Written
             slowly, for reading slowly.
           </p>
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-4">
+          <div className="reveal-4 mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-4">
             <Link href="/essays" className="btn btn-primary no-underline">
               Begin reading
             </Link>

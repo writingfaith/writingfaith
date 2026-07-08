@@ -88,6 +88,10 @@
   --font-sans: var(--font-sans);
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   background-color: var(--paper);
   color: var(--ink);
@@ -97,6 +101,17 @@ body {
   font-optical-sizing: auto;
   text-rendering: optimizeLegibility;
   font-kerning: normal;
+}
+
+/* Filmic grain: the faint tooth of real paper. Fixed layer, no requests. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  pointer-events: none;
+  opacity: 0.028;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 ::selection {
@@ -444,18 +459,65 @@ article figure img {
   animation: rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.14s both;
 }
 
-/* Scroll-driven reveal: progressive enhancement, zero JavaScript. */
+.reveal-1 { animation: rise 0.65s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.reveal-2 { animation: rise 0.65s cubic-bezier(0.22, 1, 0.36, 1) 0.12s both; }
+.reveal-3 { animation: rise 0.65s cubic-bezier(0.22, 1, 0.36, 1) 0.26s both; }
+.reveal-4 { animation: rise 0.65s cubic-bezier(0.22, 1, 0.36, 1) 0.4s both; }
+
+/* Scroll-driven reveal: progressive enhancement, zero JavaScript.
+   The from-state keeps a legibility floor — content can drift and dim,
+   but can never disappear if a timeline fails to advance (print,
+   capture, scroll restoration). */
+@keyframes rise-soft {
+  from {
+    opacity: 0.4;
+    transform: translateY(0.8rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 @supports (animation-timeline: view()) {
   .reveal-scroll {
-    animation: rise linear both;
+    animation: rise-soft linear both;
     animation-timeline: view();
     animation-range: entry 5% entry 45%;
   }
 }
 
+/* Depth: the light recedes slightly as the reader begins to scroll. */
+@supports (animation-timeline: scroll()) {
+  @keyframes wash-drift {
+    to {
+      transform: translateY(5rem);
+      opacity: 0.45;
+    }
+  }
+
+  .hero-wash::before {
+    animation: wash-drift linear both;
+    animation-timeline: scroll();
+    animation-range: 0 90vh;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
+  body::after {
+    display: none;
+  }
+
+  .hero-wash::before {
+    animation: none !important;
+  }
+
   .reveal,
   .reveal-late,
+  .reveal-1,
+  .reveal-2,
+  .reveal-3,
+  .reveal-4,
   .reveal-scroll {
     animation: none !important;
     opacity: 1 !important;
@@ -469,5 +531,68 @@ article figure img {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Masthead & navigation                                               */
+/* ------------------------------------------------------------------ */
+
+/* Double hairline rule: the closing line of a literary masthead. */
+.masthead {
+  border-bottom: 1px solid var(--rule);
+  position: relative;
+}
+
+.masthead::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 3px;
+  height: 1px;
+  background: var(--rule);
+}
+
+/* Navigation links draw their underline in, rather than changing color. */
+.nav-link {
+  color: var(--ink-muted);
+  text-decoration: none;
+  padding-bottom: 3px;
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1px;
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  transition:
+    background-size 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    color 0.2s ease;
+}
+
+.nav-link:hover {
+  color: var(--ink);
+  background-size: 100% 1px;
+}
+
+/* The publication's mark above every scripture passage. */
+.essay-body .scripture::before,
+.scripture-plate::before {
+  content: "";
+  display: block;
+  width: 7px;
+  height: 7px;
+  margin: 0 auto 1.6rem;
+  background: var(--accent);
+  transform: rotate(45deg);
+  opacity: 0.75;
+}
+
+/* Dark mode is its own design: the wash becomes candlelight. */
+@media (prefers-color-scheme: dark) {
+  .hero-wash::before {
+    background: radial-gradient(
+      ellipse 72% 68% at 50% -12%,
+      color-mix(in oklab, var(--accent) 14%, transparent),
+      transparent 74%
+    );
   }
 }

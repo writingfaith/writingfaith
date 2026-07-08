@@ -8,9 +8,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/contact" },
 };
 
-/* OWNER ACTION REQUIRED: replace the address below with the real public
-   contact address once the writingfaith.com domain and mailbox exist. */
-const contactEmail = "hello@writingfaith.com";
+const contactEmail = "veruschkapestano@gmail.com";
 
 export default function ContactPage() {
   return (

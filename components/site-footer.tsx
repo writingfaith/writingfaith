@@ -1,11 +1,14 @@
 import { cacheLife } from "next/cache";
 import Link from "next/link";
 
+import { Ornament } from "@/components/ornaments";
+
 const explore = [
   { href: "/essays", label: "Essays" },
   { href: "/search", label: "Search" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
+  { href: "/feed", label: "Newsletter" },
 ];
 
 const trust = [
@@ -61,18 +64,19 @@ export async function SiteFooter() {
                   </li>
                 ))}
                 <li>
-                  <a
-                    href="/feed.xml"
+                  <Link
+                    href="/feed"
                     className="text-ink-muted no-underline transition-colors hover:text-ink"
                   >
                     RSS feed
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </div>
           </nav>
         </div>
-        <p className="mt-12 border-t border-rule pt-6 font-sans text-sm text-ink-faint">
+        <Ornament className="mt-12" />
+        <p className="mt-6 text-center font-sans text-sm text-ink-faint">
           © {new Date().getFullYear()} Veruschka Pestano. All rights reserved.
         </p>
       </div>

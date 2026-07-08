@@ -14,10 +14,7 @@ export async function AccountNav() {
   const signedIn = Boolean(session?.user);
 
   return (
-    <Link
-      href={signedIn ? "/account" : "/signin"}
-      className="transition-colors hover:text-ink"
-    >
+    <Link href={signedIn ? "/account" : "/signin"} className="nav-link">
       {signedIn ? "Account" : "Sign in"}
     </Link>
   );
