@@ -1,34 +1,51 @@
 @import "tailwindcss";
 
 /*
- * WritingFaith design tokens.
+ * WritingFaith design system — "quiet illumination".
  *
+ * Warm paper, ink, and bronze; hairline rules; a single recurring ornament.
  * Two layers:
  *  1. Raw theme values on :root (light) and the dark override — plain CSS
  *     custom properties so they remain portable beyond Tailwind.
  *  2. `@theme inline` maps them into Tailwind utility names.
  *
- * Palette: warm paper, ink, and a muted bronze accent. Contrast pairs are
- * chosen to meet WCAG AA (body text meets AAA in both themes).
+ * Contrast pairs meet WCAG AA (body text meets AAA in both themes);
+ * --ink-faint is tuned to ≥4.5:1 against --paper in both modes.
  */
 
 :root {
   color-scheme: light;
 
-  --paper: #faf7f2;
-  --paper-raised: #ffffff;
-  --ink: #211d19;
-  --ink-muted: #5f574d;
-  --ink-faint: #8a8177;
-  --rule: #e5ddd1;
+  /* Surfaces */
+  --paper: #f9f6ef;
+  --paper-raised: #fffdf8;
+  --vellum: #f2ecdf;
+
+  /* Ink */
+  --ink: #201c16;
+  --ink-muted: #5d554a;
+  --ink-faint: #6f6656;
+
+  /* Lines */
+  --rule: #e6ddcd;
+  --rule-strong: #d3c7b2;
+
+  /* Bronze */
   --accent: #8a5a2b;
   --accent-strong: #6f4720;
+  --on-accent: #fdf9f1;
 
   --font-serif: var(--font-newsreader), "Iowan Old Style", Georgia, serif;
   --font-sans: var(--font-instrument), "Avenir Next", "Segoe UI", sans-serif;
 
-  /* Fluid type scale (minor third at small sizes, opening up on desktop). */
-  --text-body: clamp(1.0625rem, 1rem + 0.35vw, 1.25rem);
+  /* Fluid type scale */
+  --text-display: clamp(2.7rem, 1.7rem + 4.4vw, 4.9rem);
+  --text-title: clamp(2rem, 1.55rem + 1.9vw, 3.1rem);
+  --text-heading: clamp(1.3rem, 1.18rem + 0.5vw, 1.55rem);
+  --text-body: clamp(1.0625rem, 1rem + 0.35vw, 1.1875rem);
+
+  /* Rhythm */
+  --space-section: clamp(4.5rem, 3rem + 6vw, 8rem);
   --measure: 66ch;
 }
 
@@ -36,14 +53,20 @@
   :root {
     color-scheme: dark;
 
-    --paper: #191612;
-    --paper-raised: #211d18;
-    --ink: #ece5da;
-    --ink-muted: #b1a698;
-    --ink-faint: #877d70;
-    --rule: #38322a;
+    --paper: #171410;
+    --paper-raised: #1e1a14;
+    --vellum: #211c15;
+
+    --ink: #ece4d6;
+    --ink-muted: #b4a994;
+    --ink-faint: #968b7c;
+
+    --rule: #352e23;
+    --rule-strong: #4a4132;
+
     --accent: #c99a5e;
-    --accent-strong: #dcb27c;
+    --accent-strong: #ddb27f;
+    --on-accent: #1c1610;
   }
 }
 
@@ -51,12 +74,15 @@
   --color-*: initial;
   --color-paper: var(--paper);
   --color-paper-raised: var(--paper-raised);
+  --color-vellum: var(--vellum);
   --color-ink: var(--ink);
   --color-ink-muted: var(--ink-muted);
   --color-ink-faint: var(--ink-faint);
   --color-rule: var(--rule);
+  --color-rule-strong: var(--rule-strong);
   --color-accent: var(--accent);
   --color-accent-strong: var(--accent-strong);
+  --color-on-accent: var(--on-accent);
 
   --font-serif: var(--font-serif);
   --font-sans: var(--font-sans);
@@ -67,13 +93,14 @@ body {
   color: var(--ink);
   font-family: var(--font-serif);
   font-size: var(--text-body);
-  line-height: 1.65;
+  line-height: 1.68;
   font-optical-sizing: auto;
   text-rendering: optimizeLegibility;
+  font-kerning: normal;
 }
 
 ::selection {
-  background-color: color-mix(in oklab, var(--accent) 25%, transparent);
+  background-color: color-mix(in oklab, var(--accent) 24%, transparent);
 }
 
 :focus-visible {
@@ -82,7 +109,359 @@ body {
   border-radius: 2px;
 }
 
+/* ------------------------------------------------------------------ */
+/* Shared editorial vocabulary                                         */
+/* ------------------------------------------------------------------ */
+
+/* Small-caps label above headings. */
+.eyebrow {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+/* Display headline (mastheads, essay titles). */
+.display {
+  font-family: var(--font-serif);
+  font-size: var(--text-display);
+  line-height: 1.08;
+  letter-spacing: -0.022em;
+  font-weight: 470;
+  text-wrap: balance;
+}
+
+.title {
+  font-family: var(--font-serif);
+  font-size: var(--text-title);
+  line-height: 1.15;
+  letter-spacing: -0.018em;
+  font-weight: 480;
+  text-wrap: balance;
+}
+
+/* Buttons. Quiet by default; bronze for the one action that matters. */
+.btn {
+  display: inline-block;
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.72rem 1.5rem;
+  border: 1px solid var(--rule-strong);
+  color: var(--ink-muted);
+  background: transparent;
+  cursor: pointer;
+  transition:
+    color 0.25s ease,
+    border-color 0.25s ease,
+    background-color 0.25s ease;
+}
+
+.btn:hover {
+  border-color: var(--accent);
+  color: var(--accent-strong);
+  background-color: color-mix(in oklab, var(--accent) 6%, transparent);
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.btn-primary {
+  background-color: var(--accent-strong);
+  border-color: var(--accent-strong);
+  color: var(--on-accent);
+}
+
+.btn-primary:hover {
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+}
+
+/* Text field: a hairline that wakes up. */
+.field {
+  width: 100%;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--rule-strong);
+  padding: 0.55rem 0;
+  font-family: var(--font-serif);
+  font-size: 1.125rem;
+  color: var(--ink);
+  transition: border-color 0.25s ease;
+}
+
+.field::placeholder {
+  color: var(--ink-faint);
+  opacity: 0.8;
+}
+
+.field:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+/* The recurring mark: hairline — bronze diamond — hairline. */
+.ornament {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+}
+
+.ornament::before,
+.ornament::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--rule);
+}
+
+.ornament > span {
+  width: 7px;
+  height: 7px;
+  background: var(--accent);
+  transform: rotate(45deg);
+  opacity: 0.75;
+}
+
+/* A faint warmth falling from above — light through a window, not a gradient. */
+.hero-wash {
+  position: relative;
+  isolation: isolate;
+}
+
+.hero-wash::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(
+    ellipse 70% 65% at 50% -12%,
+    color-mix(in oklab, var(--accent) 8%, transparent),
+    transparent 72%
+  );
+  pointer-events: none;
+}
+
+/* Vellum plate for set-apart moments (scripture, author, empty states). */
+.plate {
+  background: var(--vellum);
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+
+/* Quiet inline text link. */
+.link {
+  color: var(--accent-strong);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+  text-decoration-color: color-mix(in oklab, var(--accent) 45%, transparent);
+  transition:
+    color 0.2s ease,
+    text-decoration-color 0.2s ease;
+}
+
+.link:hover {
+  color: var(--ink);
+  text-decoration-color: var(--accent);
+}
+
+/* ------------------------------------------------------------------ */
+/* Essay typography                                                    */
+/* ------------------------------------------------------------------ */
+
+.essay-body {
+  max-width: var(--measure);
+}
+
+.essay-body > * + * {
+  margin-block-start: 1.45em;
+}
+
+/* Drop cap on the opening paragraph — the oldest premium signal there is. */
+.essay-body > p:first-child::first-letter {
+  float: left;
+  font-size: 3.55em;
+  line-height: 0.78;
+  padding: 0.1em 0.14em 0 0;
+  font-weight: 480;
+  color: var(--accent-strong);
+}
+
+.essay-body h2,
+.essay-body h3 {
+  font-weight: 520;
+  letter-spacing: -0.012em;
+  line-height: 1.22;
+  text-wrap: balance;
+}
+
+.essay-body h2 {
+  font-size: 1.55em;
+  margin-block-start: 2.4em;
+}
+
+.essay-body h3 {
+  font-size: 1.22em;
+  margin-block-start: 1.9em;
+}
+
+.essay-body blockquote {
+  border-inline-start: 2px solid var(--rule-strong);
+  padding-inline-start: 1.4rem;
+  color: var(--ink-muted);
+  font-style: italic;
+}
+
+.essay-body ul,
+.essay-body ol {
+  padding-inline-start: 1.5rem;
+}
+
+.essay-body ul {
+  list-style: disc;
+}
+
+.essay-body ol {
+  list-style: decimal;
+}
+
+.essay-body li + li {
+  margin-block-start: 0.5em;
+}
+
+.essay-body a {
+  color: var(--accent-strong);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+  transition: color 0.2s ease;
+}
+
+.essay-body a:hover {
+  color: var(--ink);
+}
+
+/* Scripture: set apart on vellum, centered, reference in small caps. */
+.essay-body .scripture,
+.scripture-plate {
+  margin-block: 2.8em;
+  padding: 2.2rem clamp(1.25rem, 4vw, 3rem);
+  background: var(--vellum);
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  text-align: center;
+}
+
+.essay-body .scripture blockquote,
+.scripture-plate blockquote {
+  border: none;
+  padding: 0;
+  font-style: italic;
+  font-size: 1.16em;
+  line-height: 1.72;
+  color: var(--ink);
+  text-wrap: balance;
+}
+
+.essay-body .scripture figcaption,
+.scripture-plate figcaption {
+  margin-block-start: 1.1em;
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  font-style: normal;
+}
+
+.essay-body .scripture figcaption::before,
+.scripture-plate figcaption::before {
+  content: "— ";
+}
+
+/* Pull quote: a large typographic breath, ruled above and below. */
+.essay-body .pull-quote {
+  margin-block: 2.8em;
+  padding-block: 1.7em;
+  border-block: 1px solid var(--rule);
+  font-size: 1.45em;
+  line-height: 1.42;
+  font-style: italic;
+  letter-spacing: -0.012em;
+  color: var(--accent-strong);
+  text-align: center;
+  text-wrap: balance;
+}
+
+/* Editorial images. */
+.essay-body .essay-figure {
+  margin-block: 2.8em;
+}
+
+.essay-body .essay-figure img,
+article figure img {
+  width: 100%;
+  height: auto;
+  border-radius: 3px;
+  transition: opacity 0.4s ease;
+}
+
+.essay-body .essay-figure figcaption {
+  margin-block-start: 0.8em;
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  color: var(--ink-faint);
+  text-align: center;
+}
+
+/* ------------------------------------------------------------------ */
+/* Motion — one quiet entrance; scroll reveals are pure CSS and only   */
+/* where supported. Reduced motion turns all of it off.                */
+/* ------------------------------------------------------------------ */
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(0.65rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.reveal {
+  animation: rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.reveal-late {
+  animation: rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.14s both;
+}
+
+/* Scroll-driven reveal: progressive enhancement, zero JavaScript. */
+@supports (animation-timeline: view()) {
+  .reveal-scroll {
+    animation: rise linear both;
+    animation-timeline: view();
+    animation-range: entry 5% entry 45%;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .reveal-late,
+  .reveal-scroll {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
   *,
   ::before,
   ::after {

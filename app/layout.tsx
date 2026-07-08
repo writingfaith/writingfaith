@@ -1,13 +1,19 @@
 import type { Metadata } from "next";
 import { Newsreader, Instrument_Sans } from "next/font/google";
+import { draftMode } from "next/headers";
+import { VisualEditing } from "next-sanity/visual-editing";
+import { DraftModeBanner } from "@/components/draft-mode-banner";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { siteDescription, siteName, siteTitle, siteUrl } from "@/lib/site";
 import "./globals.css";
 
 const newsreader = Newsreader({
   variable: "--font-newsreader",
   subsets: ["latin"],
   style: ["normal", "italic"],
+  // Optical size axis: true display cuts for headlines, text cuts for body.
+  axes: ["opsz"],
 });
 
 const instrumentSans = Instrument_Sans({
@@ -16,19 +22,29 @@ const instrumentSans = Instrument_Sans({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: {
-    default: "WritingFaith — Essays on faith by Veruschka Pestano",
-    template: "%s — WritingFaith",
+    default: siteTitle,
+    template: `%s — ${siteName}`,
   },
-  description:
-    "Thoughtful long-form essays on Christian faith, hope, and everyday life, written by Veruschka Pestano.",
+  description: siteDescription,
+  openGraph: {
+    type: "website",
+    siteName,
+    locale: "en_GB",
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const { isEnabled: isDraftMode } = await draftMode();
+
   return (
     <html
       lang="en"
@@ -46,6 +62,12 @@ export default function RootLayout({
           {children}
         </main>
         <SiteFooter />
+        {isDraftMode && (
+          <>
+            <DraftModeBanner />
+            <VisualEditing />
+          </>
+        )}
       </body>
     </html>
   );

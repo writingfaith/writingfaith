@@ -1,24 +1,26 @@
 import Link from "next/link";
-import type { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "Page not found",
-};
-
-export default function NotFound() {
+/** Shared layout for small confirmation/status pages. */
+export function StatusPage({
+  eyebrow,
+  title,
+  children,
+}: {
+  eyebrow: string;
+  title: React.ReactNode;
+  children: React.ReactNode;
+}) {
   return (
     <div className="mx-auto max-w-4xl px-6">
       <section className="py-20 sm:py-28">
         <p className="eyebrow">
-          Page not found
+          {eyebrow}
         </p>
         <h1 className="title mt-6 max-w-[26ch]">
-          This page seems to have <em className="text-accent">wandered off</em>.
+          {title}
         </h1>
-        <p className="mt-8 max-w-prose text-ink-muted">
-          The page you were looking for doesn’t exist, or may have moved.
-        </p>
-        <p className="mt-4 font-sans text-sm">
+        <div className="mt-8 max-w-prose text-ink-muted">{children}</div>
+        <p className="mt-6 font-sans text-sm">
           <Link
             href="/"
             className="text-accent-strong underline underline-offset-4 transition-colors hover:text-ink"
