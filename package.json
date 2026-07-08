@@ -45,25 +45,12 @@
     "typescript": "^5"
   },
   "overrides": {
-    "@esbuild-kit/core-utils": {
-      ".": "3.3.2",
-      "esbuild": "0.25.12"
-    },
-    "@sanity/preview-url-secret": {
-      ".": "4.0.8",
-      "@sanity/uuid": "3.0.3"
-    },
-    "@vercel/frameworks": {
-      ".": "3.29.0",
-      "js-yaml": "4.3.0",
-      "smol-toml": "1.7.0"
-    },
+    "@esbuild-kit/core-utils": "3.3.2",
+    "@sanity/preview-url-secret": "4.0.8",
+    "@vercel/frameworks": "3.30.5",
     "@sanity/uuid": "3.0.3",
+    "esbuild": "0.25.12",
     "js-yaml": "4.3.0",
-    "next": {
-      ".": "16.2.10",
-      "postcss": "8.5.16"
-    },
     "postcss": "8.5.16",
     "smol-toml": "1.7.0",
     "typeid-js": {
