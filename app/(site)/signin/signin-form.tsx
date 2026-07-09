@@ -6,7 +6,7 @@ import { signInWithEmail, type SignInState } from "@/lib/auth/actions";
 
 const initialState: SignInState = {};
 
-export function SignInForm() {
+export function SignInForm({ redirectTo = "/account" }: { redirectTo?: string }) {
   const [state, formAction, pending] = useActionState(
     signInWithEmail,
     initialState,
@@ -30,6 +30,7 @@ export function SignInForm() {
           placeholder="you@example.com"
           className="field"
         />
+        <input type="hidden" name="redirectTo" value={redirectTo} />
         <button type="submit" disabled={pending} className="btn btn-primary w-full shrink-0 sm:w-auto">
           {pending ? "Sending…" : "Email me a link"}
         </button>

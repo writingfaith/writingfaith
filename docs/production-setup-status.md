@@ -25,6 +25,9 @@ Last updated: 2026-07-09
 - Production was redeployed after the env vars were added.
 - Public health endpoint added at `/api/health`.
 - Dependency overrides were refreshed so the current install audits cleanly.
+- Studio and draft-preview editing are restricted to
+  `veruschkapestano@gmail.com` by default. `ADMIN_EMAILS` can override the
+  allowlist if ownership ever needs to change.
 
 ## Verification Results
 
@@ -43,6 +46,9 @@ Live checks after redeploy:
 - `/feed.xml` returns 200.
 - `/studio` returns 200.
 - `/api/health` returns 200.
+- Unauthenticated `/studio` renders the owner sign-in gate, not the Sanity
+  editor.
+- Unauthenticated `/api/draft-mode/enable` returns 401.
 
 ## Remaining Production Blocker
 
@@ -59,7 +65,7 @@ Required manual DNS step:
 
 ## Production Readiness Notes
 
-- Publishing essays through Sanity Studio is ready from the application/configuration side.
+- Publishing essays through Sanity Studio is ready from the application/configuration side, and the embedded Studio exposes Essays, Pages, Categories, Authors, rich body content, scripture quotations, pull quotes, and accessible images.
 - Subscriber collection is implemented with double opt-in, Neon storage, Resend email, and Upstash rate limiting, but production email delivery remains blocked by the missing verified Resend domain.
 - `RESEND_AUDIENCE_ID` is optional. Without it, confirmed subscribers remain in Neon, but they are not mirrored into a Resend Audience for broadcast management.
 - `AUTH_GOOGLE_ID` and `AUTH_GOOGLE_SECRET` are optional. Google OAuth stays hidden until both are configured.

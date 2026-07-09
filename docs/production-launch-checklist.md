@@ -26,6 +26,8 @@ Copy from `.env.local.example`; set for Production and Preview:
 - `NEXT_PUBLIC_SANITY_PROJECT_ID`, `NEXT_PUBLIC_SANITY_DATASET`
 - `SANITY_API_READ_TOKEN` (Viewer token), `SANITY_REVALIDATE_SECRET`
 - `AUTH_SECRET` (`openssl rand -base64 32` — generate a fresh one for prod)
+- `ADMIN_EMAILS` — owner/editor allowlist. Keep as
+  `veruschkapestano@gmail.com` unless ownership changes.
 - `DATABASE_URL` (Neon pooled connection string)
 - `RESEND_API_KEY`, `EMAIL_FROM`, `RESEND_AUDIENCE_ID` (optional)
 - `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET` (optional)
@@ -33,10 +35,9 @@ Copy from `.env.local.example`; set for Production and Preview:
 
 ## 3. Deployment steps
 
-1. Put the repo in git and push to GitHub (it is not yet a git repository).
-2. Vercel → New Project → import the repo, root directory `writing-faith`.
-   Defaults are correct (Next.js 16, `npm run build`).
-3. Add the env vars (above), deploy.
+1. Push the `main` branch to GitHub.
+2. Vercel project `writingfaiths-projects/writingfaith` builds from `main`.
+3. Confirm env vars (above), deploy.
 4. Apply the database schema once: `DATABASE_URL=<prod url> npm run db:migrate`.
 5. Smoke-test the deployment URL before pointing the domain at it
    (see §8 verification list).
@@ -56,6 +57,9 @@ Copy from `.env.local.example`; set for Production and Preview:
   `_type in ["article","author","category","page"]`, projection
   `{_type, "slug": slug.current}`, secret = `SANITY_REVALIDATE_SECRET`.
 - Create the Author document and first essay in `/studio`.
+- `/studio` and Studio draft preview are gated by the site session and only
+  load for `ADMIN_EMAILS`; Sanity project membership still controls Sanity's
+  own document permissions after the owner gate passes.
 - Optional: create a `page` document with slug `about` to take editorial
   ownership of the About page (a crafted default renders until then).
 

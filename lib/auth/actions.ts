@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { AuthError } from "next-auth";
 
 import { signIn, signOut } from "@/lib/auth";
+import { safeRedirectPath } from "@/lib/auth/owner";
 import { allowRequest } from "@/lib/rate-limit";
 import { normalizeEmail } from "@/lib/validate";
 
@@ -24,6 +25,7 @@ export async function signInWithEmail(
   formData: FormData,
 ): Promise<SignInState> {
   const email = normalizeEmail(formData.get("email"));
+  const redirectTo = safeRedirectPath(formData.get("redirectTo"));
   if (!email) {
     return { error: "Please enter a valid email address." };
   }
@@ -40,7 +42,7 @@ export async function signInWithEmail(
   }
 
   try {
-    await signIn("resend", { email, redirectTo: "/account" });
+    await signIn("resend", { email, redirectTo });
     return {};
   } catch (error) {
     // signIn signals success by throwing a redirect — let it through.
@@ -53,8 +55,10 @@ export async function signInWithEmail(
   }
 }
 
-export async function signInWithGoogle(): Promise<void> {
-  await signIn("google", { redirectTo: "/account" });
+export async function signInWithGoogle(formData?: FormData): Promise<void> {
+  await signIn("google", {
+    redirectTo: safeRedirectPath(formData?.get("redirectTo")),
+  });
 }
 
 export async function signOutAction(): Promise<void> {
