@@ -131,3 +131,27 @@ export const feedQuery = groq`
     }
   }
 `;
+
+/** The Site Settings singleton; every field optional, defaults in lib/site-settings.ts. */
+export const siteSettingsQuery = groq`
+  *[_type == "siteSettings" && _id == "siteSettings"][0] {
+    siteName,
+    tagline,
+    authorName,
+    postLabelSingular,
+    postLabelPlural,
+    heroEyebrow,
+    heroHeading,
+    heroIntro,
+    topicsHeading,
+    "topics": coalesce(topics[]{ title, text }, []),
+    scriptureQuote,
+    scriptureReference,
+    writerBio,
+    newsletterHeading,
+    newsletterText,
+    archiveEyebrow,
+    archiveHeading,
+    footerBlurb
+  }
+`;

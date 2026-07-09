@@ -8,16 +8,19 @@ import {
   categoriesWithCountQuery,
 } from "@/lib/sanity/queries";
 import type { ArticlePreview, CategoryWithCount } from "@/lib/sanity/types";
+import { getSiteSettings } from "@/lib/site-settings";
 
-export const metadata: Metadata = {
-  title: "Essays",
-  description:
-    "All essays by Veruschka Pestano — long-form writing on Christian faith, hope, and everyday life.",
-  alternates: { canonical: "/essays" },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings();
+  return {
+    title: settings.postPluralTitle,
+    description: settings.tagline,
+    alternates: { canonical: "/essays" },
+  };
+}
 
 export default async function EssaysPage() {
-  const [essays, categories] = await Promise.all([
+  const [essays, categories, settings] = await Promise.all([
     sanityFetch<ArticlePreview[]>({
       query: allArticlesQuery,
       tags: contentTags.article(),
@@ -26,16 +29,21 @@ export default async function EssaysPage() {
       query: categoriesWithCountQuery,
       tags: contentTags.category(),
     }),
+    getSiteSettings(),
   ]);
 
   return (
     <div className="mx-auto max-w-4xl px-6">
       <section className="py-16 sm:py-20">
         <header className="reveal mx-auto max-w-2xl text-center">
-          <p className="eyebrow">The archive</p>
+          <p className="eyebrow">{settings.archiveEyebrow}</p>
           <h1 className="title mt-5">
-            Essays on scripture, doubt, hope, and{" "}
-            <em className="text-accent">grace</em>.
+            {settings.archiveHeading ?? (
+              <>
+                Writing on scripture, doubt, hope, and{" "}
+                <em className="text-accent">grace</em>.
+              </>
+            )}
           </h1>
         </header>
         {categories.length > 0 && (
@@ -60,9 +68,18 @@ export default async function EssaysPage() {
             <EssayList essays={essays} headingLevel="h2" />
           </div>
         ) : (
-          <p className="mx-auto mt-10 max-w-prose text-center text-ink-muted">
-            No essays have been published yet. The first one is on its way.
-          </p>
+          <div className="plate mx-auto mt-12 max-w-xl px-6 py-12 text-center">
+            <p className="font-serif text-xl">
+              The first {settings.postSingular} is being written.
+            </p>
+            <p className="mx-auto mt-3 max-w-[40ch] leading-relaxed text-ink-muted">
+              Nothing has been published yet.{" "}
+              <Link href="/feed" className="link">
+                Subscribe
+              </Link>{" "}
+              to be notified the moment it arrives.
+            </p>
+          </div>
         )}
       </section>
     </div>

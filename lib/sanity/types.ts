@@ -58,3 +58,25 @@ export interface SitePage {
   slug: string;
   body: PortableTextBlock[];
 }
+
+/** The Site Settings singleton as stored in Sanity (all fields optional). */
+export interface SiteSettingsDoc {
+  siteName?: string;
+  tagline?: string;
+  authorName?: string;
+  postLabelSingular?: string;
+  postLabelPlural?: string;
+  heroEyebrow?: string;
+  heroHeading?: string;
+  heroIntro?: string;
+  topicsHeading?: string;
+  topics?: Array<{ title?: string; text?: string }>;
+  scriptureQuote?: string;
+  scriptureReference?: string;
+  writerBio?: string;
+  newsletterHeading?: string;
+  newsletterText?: string;
+  archiveEyebrow?: string;
+  archiveHeading?: string;
+  footerBlurb?: string;
+}

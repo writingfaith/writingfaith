@@ -36,12 +36,12 @@ export default function TermsPage() {
         are used according to their quotation policies.
       </p>
 
-      <h2>Accounts and the newsletter</h2>
+      <h2>The newsletter</h2>
       <p>
-        Accounts are free and optional. You agree to use your own email
-        address and not to abuse sign-in or subscription forms. We may remove
-        accounts used abusively. You can leave at any time — unsubscribe with
-        one click, or ask for your account to be deleted.
+        The newsletter is free. You agree to use your own email address and
+        not to abuse the subscription forms. We may remove subscriptions used
+        abusively. You can leave at any time — every email unsubscribes with
+        one click, and you can ask for your data to be deleted.
       </p>
 
       <h2>The content is offered as-is</h2>

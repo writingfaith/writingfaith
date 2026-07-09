@@ -33,7 +33,7 @@ export async function getOwnerAccess(): Promise<OwnerAccess> {
 
 export function safeRedirectPath(
   value: FormDataEntryValue | string | string[] | null | undefined,
-  fallback = "/account",
+  fallback = "/studio",
 ): string {
   const raw = Array.isArray(value) ? value[0] : value;
   if (typeof raw !== "string") return fallback;

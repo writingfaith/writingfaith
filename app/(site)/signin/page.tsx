@@ -26,17 +26,17 @@ async function SignInPageContent({
     <div className="mx-auto max-w-4xl px-6">
       <section className="py-16 sm:py-20">
         <h1 className="eyebrow">
-          Sign in
+          Editor sign in
         </h1>
         <p className="title mt-6 max-w-[30ch]">
           No passwords here — we’ll email you a link.
         </p>
         <p className="mt-6 max-w-prose text-ink-muted">
+          This sign-in opens the publication Studio and is for the site owner.
           Enter your email address and we’ll send a one-time sign-in link.
-          A free account lets you manage your newsletter subscription.
         </p>
         <p className="mt-3 max-w-prose font-sans text-sm text-ink-faint">
-          Just want new essays by email? You don’t need an account —{" "}
+          Looking for new writing by email? You don’t need to sign in —{" "}
           <Link href="/feed" className="link">
             join the newsletter
           </Link>
@@ -44,11 +44,8 @@ async function SignInPageContent({
         </p>
         {isStudioSignIn && (
           <p className="mt-4 max-w-prose border-l border-accent px-4 font-sans text-sm text-ink-muted">
-            Studio access is limited to Veruschka Pestano. Sign in with{" "}
-            <span className="font-semibold text-ink">
-              veruschkapestano@gmail.com
-            </span>{" "}
-            to edit the publication.
+            Studio access is limited to the site owner. Sign in with the
+            owner email to edit the publication.
           </p>
         )}
 

@@ -1,15 +1,9 @@
-import { cacheLife } from "next/cache";
+import { cacheLife, cacheTag } from "next/cache";
 import Link from "next/link";
 
+import { BrandMark } from "@/components/brand-mark";
 import { Ornament } from "@/components/ornaments";
-
-const explore = [
-  { href: "/essays", label: "Essays" },
-  { href: "/search", label: "Search" },
-  { href: "/about", label: "About" },
-  { href: "/contact", label: "Contact" },
-  { href: "/feed", label: "Newsletter" },
-];
+import { getSiteSettings } from "@/lib/site-settings";
 
 const trust = [
   { href: "/privacy", label: "Privacy" },
@@ -20,6 +14,18 @@ const trust = [
 export async function SiteFooter() {
   "use cache";
   cacheLife("days");
+  // Settings edits must reach the footer immediately, not after a day.
+  cacheTag("siteSettings");
+
+  const settings = await getSiteSettings();
+
+  const explore = [
+    { href: "/essays", label: settings.postPluralTitle },
+    { href: "/search", label: "Search" },
+    { href: "/about", label: "About" },
+    { href: "/contact", label: "Contact" },
+    { href: "/feed", label: "Newsletter" },
+  ];
 
   return (
     <footer className="mt-auto border-t border-rule">
@@ -27,12 +33,10 @@ export async function SiteFooter() {
         <div className="flex flex-col justify-between gap-10 sm:flex-row">
           <div className="max-w-xs">
             <p className="font-serif text-lg tracking-tight text-ink">
-              Writing<span className="italic text-accent">Faith</span>
+              <BrandMark name={settings.siteName} />
             </p>
             <p className="mt-3 font-sans text-sm leading-relaxed text-ink-faint">
-              Independent essays on Christian faith by Veruschka Pestano —
-              scripture, doubt, hope, and grace, explored with honesty and
-              care.
+              {settings.footerBlurb}
             </p>
           </div>
           <nav aria-label="Footer" className="flex gap-16">
@@ -78,7 +82,10 @@ export async function SiteFooter() {
         </div>
         <Ornament className="mt-12" />
         <div className="mt-6 flex flex-col items-center gap-2 text-center font-sans text-sm text-ink-faint sm:flex-row sm:justify-between sm:text-left">
-          <p>© {new Date().getFullYear()} WritingFaith. All rights reserved.</p>
+          <p>
+            © {new Date().getFullYear()} {settings.siteName}. All rights
+            reserved.
+          </p>
           {/* Colophon: the closing line of a well-made book. */}
           <p>
             Set in Newsreader &amp; Instrument Sans ·{" "}

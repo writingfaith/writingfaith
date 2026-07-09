@@ -7,19 +7,17 @@ import { AuthorMark, OliveBranch, Ornament } from "@/components/ornaments";
 import { contentTags, sanityFetch } from "@/lib/sanity/fetch";
 import { latestArticlesQuery } from "@/lib/sanity/queries";
 import type { ArticlePreview } from "@/lib/sanity/types";
-import {
-  absoluteUrl,
-  authorName,
-  siteDescription,
-  siteName,
-  siteUrl,
-} from "@/lib/site";
+import { getSiteSettings } from "@/lib/site-settings";
+import { absoluteUrl, siteUrl } from "@/lib/site";
 
 export default async function HomePage() {
-  const latest = await sanityFetch<ArticlePreview[]>({
-    query: latestArticlesQuery,
-    tags: contentTags.article(),
-  });
+  const [latest, settings] = await Promise.all([
+    sanityFetch<ArticlePreview[]>({
+      query: latestArticlesQuery,
+      tags: contentTags.article(),
+    }),
+    getSiteSettings(),
+  ]);
   const [featured, ...rest] = latest;
 
   return (
@@ -31,14 +29,14 @@ export default async function HomePage() {
             {
               "@type": "WebSite",
               "@id": `${siteUrl}/#website`,
-              name: siteName,
-              description: siteDescription,
+              name: settings.siteName,
+              description: settings.tagline,
               url: siteUrl,
             },
             {
               "@type": "Person",
               "@id": `${siteUrl}/#author`,
-              name: authorName,
+              name: settings.authorName,
               url: siteUrl,
               mainEntityOfPage: absoluteUrl("/"),
             },
@@ -49,15 +47,17 @@ export default async function HomePage() {
       {/* Hero — centered, lit faintly from above. */}
       <section className="hero-wash">
         <div className="mx-auto max-w-3xl px-6 pb-20 pt-24 text-center sm:pb-28 sm:pt-32">
-          <p className="reveal-1 eyebrow">Essays on faith</p>
+          <p className="reveal-1 eyebrow">{settings.heroEyebrow}</p>
           <h1 className="reveal-2 display mx-auto mt-7 max-w-[18ch]">
-            Quiet reflections on following{" "}
-            <em className="text-accent">Christ</em> in an unquiet world.
+            {settings.heroHeading ?? (
+              <>
+                Quiet reflections on following{" "}
+                <em className="text-accent">Christ</em> in an unquiet world.
+              </>
+            )}
           </h1>
           <p className="reveal-3 mx-auto mt-8 max-w-[46ch] leading-relaxed text-ink-muted">
-            Long-form essays on Christian faith — scripture, prayer,
-            doubt, and hope — by Veruschka Pestano. Free to read, with new
-            essays delivered by email to subscribers.
+            {settings.heroIntro}
           </p>
           <div className="reveal-4 mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-4">
             <Link href="/essays" className="btn btn-primary no-underline">
@@ -75,10 +75,13 @@ export default async function HomePage() {
           <>
             <Ornament className="reveal-late" />
             <section
-              aria-label="Latest essay"
+              aria-label={`Latest ${settings.postSingular}`}
               className="reveal-late py-16 sm:py-20"
             >
-              <FeaturedEssay essay={featured} />
+              <FeaturedEssay
+                essay={featured}
+                eyebrow={`The latest ${settings.postSingular}`}
+              />
             </section>
           </>
         )}
@@ -91,38 +94,19 @@ export default async function HomePage() {
           className="reveal-scroll border-t border-rule py-14 sm:py-16"
         >
           <h2 id="topics-heading" className="eyebrow">
-            What you’ll find here
+            {settings.topicsHeading}
           </h2>
           <div className="mt-8 grid gap-10 sm:grid-cols-3 sm:gap-8">
-            <div>
-              <h3 className="font-serif text-xl tracking-tight">
-                Scripture, read closely
-              </h3>
-              <p className="mt-3 text-[0.98em] leading-relaxed text-ink-muted">
-                Careful readings that sit with a passage long enough to hear
-                it — taking the text seriously without flattening it into a
-                slogan.
-              </p>
-            </div>
-            <div>
-              <h3 className="font-serif text-xl tracking-tight">
-                Honest questions
-              </h3>
-              <p className="mt-3 text-[0.98em] leading-relaxed text-ink-muted">
-                Doubt is not the opposite of faith. These essays make room
-                for uncertainty, grief, and the questions most sermons skip.
-              </p>
-            </div>
-            <div>
-              <h3 className="font-serif text-xl tracking-tight">
-                Ordinary life
-              </h3>
-              <p className="mt-3 text-[0.98em] leading-relaxed text-ink-muted">
-                Faith as it is actually lived — at kitchen tables and bus
-                stops, where belief is tested and, sometimes quietly,
-                renewed.
-              </p>
-            </div>
+            {settings.topics.map((topic) => (
+              <div key={topic.title}>
+                <h3 className="font-serif text-xl tracking-tight">
+                  {topic.title}
+                </h3>
+                <p className="mt-3 text-[0.98em] leading-relaxed text-ink-muted">
+                  {topic.text}
+                </p>
+              </div>
+            ))}
           </div>
         </section>
       </div>
@@ -131,9 +115,9 @@ export default async function HomePage() {
       <section aria-label="Scripture" className="reveal-scroll">
         <figure className="scripture-plate my-4 sm:my-6">
           <blockquote className="mx-auto max-w-2xl text-xl sm:text-2xl">
-            Be still, and know that I am God.
+            {settings.scriptureQuote}
           </blockquote>
-          <figcaption>Psalm 46:10</figcaption>
+          <figcaption>{settings.scriptureReference}</figcaption>
         </figure>
       </section>
 
@@ -145,10 +129,10 @@ export default async function HomePage() {
           >
             <div className="flex items-baseline justify-between gap-6">
               <h2 id="more-essays" className="eyebrow">
-                Recent essays
+                Recent {settings.postPlural}
               </h2>
               <Link href="/essays" className="link font-sans text-sm">
-                All essays
+                All {settings.postPlural}
               </Link>
             </div>
             <div className="mt-2 border-t border-rule">
@@ -169,14 +153,11 @@ export default async function HomePage() {
                 The writer
               </h2>
               <p className="mt-3 max-w-prose leading-relaxed text-ink-muted">
-                Veruschka Pestano writes about the life of faith from the
-                middle of it — not from above it. These essays are one
-                reader’s slow walk through scripture, doubt, and grace,
-                offered in the hope that they keep you company on yours.
+                {settings.writerBio}
               </p>
               <p className="mt-4">
                 <Link href="/about" className="link font-sans text-sm">
-                  Read more about WritingFaith
+                  Read more about {settings.siteName}
                 </Link>
               </p>
             </div>
@@ -190,12 +171,10 @@ export default async function HomePage() {
         >
           <OliveBranch className="mx-auto h-11 w-auto text-accent" />
           <h2 id="newsletter-heading" className="eyebrow mt-6">
-            Essays by email
+            {settings.newsletterHeading}
           </h2>
           <p className="mx-auto mt-4 max-w-[44ch] leading-relaxed text-ink-muted">
-            One considered email when a new essay is published — most months
-            that’s one or two. Free, no spam, and every email ends with a
-            one-click unsubscribe.
+            {settings.newsletterText}
           </p>
           <NewsletterForm centered />
         </section>

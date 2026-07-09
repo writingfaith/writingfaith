@@ -2,9 +2,7 @@
 
 import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
-import { revalidatePath } from "next/cache";
 
-import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { newsletterSubscriptions } from "@/lib/db/schema";
 import { emailFrom, getResend } from "@/lib/email";
@@ -12,7 +10,6 @@ import { confirmSubscriptionEmail } from "@/lib/email/templates";
 import { allowRequest } from "@/lib/rate-limit";
 import { absoluteUrl } from "@/lib/site";
 import { normalizeEmail } from "@/lib/validate";
-import { syncContactToResend } from "./resend-sync";
 
 export interface SubscribeState {
   ok?: boolean;
@@ -97,61 +94,3 @@ export async function subscribeToNewsletter(
 
 const confirmationMessage =
   "Almost there — check your inbox for a confirmation email.";
-
-/**
- * Subscribe the signed-in reader directly (their address is already
- * verified by sign-in, so double opt-in would be redundant).
- */
-export async function subscribeCurrentUser(): Promise<void> {
-  const session = await auth();
-  const email = normalizeEmail(session?.user?.email);
-  if (!email || !session?.user) return;
-
-  const now = new Date();
-  const [existing] = await db
-    .select()
-    .from(newsletterSubscriptions)
-    .where(eq(newsletterSubscriptions.email, email));
-
-  const synced = await syncContactToResend(email, false);
-
-  if (existing) {
-    await db
-      .update(newsletterSubscriptions)
-      .set({
-        status: "subscribed",
-        userId: session.user.id,
-        confirmedAt: now,
-        unsubscribedAt: null,
-        syncedToResend: synced,
-      })
-      .where(eq(newsletterSubscriptions.id, existing.id));
-  } else {
-    await db.insert(newsletterSubscriptions).values({
-      email,
-      userId: session.user.id,
-      status: "subscribed",
-      confirmedAt: now,
-      syncedToResend: synced,
-    });
-  }
-  revalidatePath("/account");
-}
-
-/** Unsubscribe the signed-in reader. */
-export async function unsubscribeCurrentUser(): Promise<void> {
-  const session = await auth();
-  const email = normalizeEmail(session?.user?.email);
-  if (!email) return;
-
-  const synced = await syncContactToResend(email, true);
-  await db
-    .update(newsletterSubscriptions)
-    .set({
-      status: "unsubscribed",
-      unsubscribedAt: new Date(),
-      syncedToResend: synced,
-    })
-    .where(eq(newsletterSubscriptions.email, email));
-  revalidatePath("/account");
-}

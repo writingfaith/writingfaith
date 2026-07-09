@@ -27,20 +27,21 @@ export default function PrivacyPage() {
 
       <h2>Reading</h2>
       <p>
-        You can read everything here without an account and without telling us
+        You can read everything here without signing up and without telling us
         anything. We use Vercel’s cookieless, aggregate analytics to
         understand which essays are read — it identifies pages, not people,
         which is why there is no cookie banner: there is nothing to consent
         to.
       </p>
 
-      <h2>If you create an account</h2>
+      <h2>If you sign in (site owner)</h2>
       <p>
-        Accounts are optional and free. If you sign in, we store your email
-        address (and, if you use Google sign-in, your name as Google provides
-        it) plus a session cookie so you stay signed in. Sign-in cookies are
-        strictly necessary for the feature you asked for; they are not used to
-        track you. We never see or store a password, because there are none.
+        Signing in exists only to open the publication editor and is limited
+        to the site owner. When used, we store the email address (and, with
+        Google sign-in, the name Google provides) plus a session cookie.
+        Sign-in cookies are strictly necessary for editing; they are not used
+        to track you. We never see or store a password, because there are
+        none.
       </p>
 
       <h2>If you subscribe to the newsletter</h2>
@@ -54,7 +55,7 @@ export default function PrivacyPage() {
 
       <h2>Where data lives</h2>
       <p>
-        Account and subscription data is stored in our database (Neon), email
+        Subscription and sign-in data is stored in our database (Neon), email
         is delivered by Resend, and the site is hosted on Vercel. Essay
         content is managed in Sanity and contains no reader data. Each
         provider processes data on our instructions.
@@ -63,9 +64,9 @@ export default function PrivacyPage() {
       <h2>Your choices</h2>
       <p>
         You can unsubscribe from the newsletter at any time via the link in
-        any email or from your <Link href="/account">account page</Link>. If
-        you’d like your account and its data deleted entirely, email us via
-        the <Link href="/contact">contact page</Link> and it will be done —
+        any email — it works with one click and takes effect immediately. If
+        you’d like your data deleted entirely, email us via the{" "}
+        <Link href="/contact">contact page</Link> and it will be done —
         there is no retention we need beyond your participation.
       </p>
 

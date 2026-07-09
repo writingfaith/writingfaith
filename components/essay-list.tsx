@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { formatDate } from "@/lib/format";
 import type { ArticlePreview } from "@/lib/sanity/types";
+import { getSiteSettings } from "@/lib/site-settings";
 
 /** Date · categories meta line used across essay presentations. */
 function EssayMeta({ essay }: { essay: ArticlePreview }) {
@@ -19,7 +20,7 @@ function EssayMeta({ essay }: { essay: ArticlePreview }) {
 }
 
 /** The archive: quiet ruled rows, whole row clickable. */
-export function EssayList({
+export async function EssayList({
   essays,
   headingLevel = "h3",
 }: {
@@ -27,7 +28,9 @@ export function EssayList({
   /** Keeps the document outline correct wherever the list appears. */
   headingLevel?: "h2" | "h3";
 }) {
+  const settings = await getSiteSettings();
   const Heading = headingLevel;
+
   return (
     <ul className="divide-y divide-rule">
       {essays.map((essay) => (
@@ -49,7 +52,7 @@ export function EssayList({
               aria-hidden="true"
               className="mt-4 font-sans text-xs uppercase tracking-[0.18em] text-ink-faint transition-colors duration-200 group-hover:text-accent-strong"
             >
-              Read the essay{" "}
+              Read the {settings.postSingular}{" "}
               <span className="inline-block transition-transform duration-200 group-hover:translate-x-1">
                 →
               </span>
@@ -61,11 +64,17 @@ export function EssayList({
   );
 }
 
-/** The newest essay, given the front-page treatment it deserves. */
-export function FeaturedEssay({ essay }: { essay: ArticlePreview }) {
+/** The newest piece of writing, given the front-page treatment it deserves. */
+export function FeaturedEssay({
+  essay,
+  eyebrow = "The latest essay",
+}: {
+  essay: ArticlePreview;
+  eyebrow?: string;
+}) {
   return (
     <article className="group relative mx-auto max-w-2xl text-center">
-      <p className="eyebrow">The latest essay</p>
+      <p className="eyebrow">{eyebrow}</p>
       <h2 className="title mt-5">
         <Link
           href={`/essays/${essay.slug}`}

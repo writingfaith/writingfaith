@@ -50,4 +50,5 @@ export const contentTags = {
   article: (slug?: string) => (slug ? [`article`, `article:${slug}`] : ["article"]),
   page: (slug?: string) => (slug ? [`page`, `page:${slug}`] : ["page"]),
   category: () => ["article", "category"],
+  settings: () => ["siteSettings"],
 };

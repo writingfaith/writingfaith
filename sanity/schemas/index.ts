@@ -5,6 +5,7 @@ import { categoryType } from "./category";
 import { pageType } from "./page";
 import { pullQuoteType } from "./pull-quote";
 import { scriptureType } from "./scripture";
+import { siteSettingsType } from "./site-settings";
 
 export const schemaTypes = [
   // Documents
@@ -12,6 +13,7 @@ export const schemaTypes = [
   authorType,
   categoryType,
   pageType,
+  siteSettingsType,
   // Objects
   blockContentType,
   scriptureType,

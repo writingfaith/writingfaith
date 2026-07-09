@@ -4,6 +4,7 @@ import Link from "next/link";
 import { NewsletterForm } from "@/components/newsletter-form";
 import { OliveBranch, Ornament } from "@/components/ornaments";
 import { absoluteUrl } from "@/lib/site";
+import { getSiteSettings } from "@/lib/site-settings";
 
 export const metadata: Metadata = {
   title: "Follow",
@@ -16,8 +17,9 @@ export const metadata: Metadata = {
  * The human face of the feed. Browsers have largely stopped rendering raw
  * RSS, so the footer points here; /feed.xml remains the machine feed.
  */
-export default function FeedPage() {
+export default async function FeedPage() {
   const feedUrl = absoluteUrl("/feed.xml");
+  const settings = await getSiteSettings();
 
   return (
     <div className="mx-auto max-w-4xl px-6">
@@ -44,9 +46,7 @@ export default function FeedPage() {
           By email
         </h2>
         <p className="mx-auto mt-4 max-w-[44ch] leading-relaxed text-ink-muted">
-          One email when a new essay is published — nothing else, ever. We’ll
-          send a confirmation first, and every email has a one-click
-          unsubscribe.
+          {settings.newsletterText}
         </p>
         <NewsletterForm centered />
       </section>

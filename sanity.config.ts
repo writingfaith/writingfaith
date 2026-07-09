@@ -35,5 +35,9 @@ export default defineConfig({
 
   schema: {
     types: schemaTypes,
+    // The settings singleton is reached from the structure pane, never
+    // created ad hoc from the "new document" menu.
+    templates: (templates) =>
+      templates.filter(({ schemaType }) => schemaType !== "siteSettings"),
   },
 });

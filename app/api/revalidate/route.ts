@@ -2,7 +2,13 @@ import { revalidateTag } from "next/cache";
 import type { NextRequest } from "next/server";
 import { parseBody } from "next-sanity/webhook";
 
-const allowedTypes = new Set(["article", "author", "category", "page"]);
+const allowedTypes = new Set([
+  "article",
+  "author",
+  "category",
+  "page",
+  "siteSettings",
+]);
 const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const jsonHeaders = {
   "Cache-Control": "no-store",
