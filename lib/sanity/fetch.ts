@@ -45,6 +45,24 @@ export async function sanityFetch<T>({
   return fetchPublished<T>(query, params, tags);
 }
 
+/**
+ * Published-only variant for places that must stay prerenderable — the root
+ * layout's theme attributes. Never consults Draft Mode (request data), so the
+ * static shell keeps its build-time render; published edits still invalidate
+ * instantly via tags.
+ */
+export async function sanityFetchPublished<T>({
+  query,
+  params = {},
+  tags,
+}: {
+  query: string;
+  params?: Params;
+  tags: string[];
+}): Promise<T> {
+  return fetchPublished<T>(query, params, tags);
+}
+
 /** Cache tags, kept in one place so the webhook and queries can't drift. */
 export const contentTags = {
   article: (slug?: string) => (slug ? [`article`, `article:${slug}`] : ["article"]),

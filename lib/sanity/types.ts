@@ -62,6 +62,8 @@ export interface SitePage {
 /** The Site Settings singleton as stored in Sanity (all fields optional). */
 export interface SiteSettingsDoc {
   siteName?: string;
+  fontTheme?: string;
+  accentTheme?: string;
   tagline?: string;
   authorName?: string;
   postLabelSingular?: string;

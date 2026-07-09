@@ -98,7 +98,7 @@ export default async function HomePage() {
           </h2>
           <div className="mt-8 grid gap-10 sm:grid-cols-3 sm:gap-8">
             {settings.topics.map((topic) => (
-              <div key={topic.title}>
+              <div key={topic.title} className="topic-rule">
                 <h3 className="font-serif text-xl tracking-tight">
                   {topic.title}
                 </h3>

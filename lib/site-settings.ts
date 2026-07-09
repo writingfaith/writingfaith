@@ -1,4 +1,8 @@
-import { contentTags, sanityFetch } from "@/lib/sanity/fetch";
+import {
+  contentTags,
+  sanityFetch,
+  sanityFetchPublished,
+} from "@/lib/sanity/fetch";
 import { siteSettingsQuery } from "@/lib/sanity/queries";
 import type { SiteSettingsDoc } from "@/lib/sanity/types";
 import { authorName, siteDescription, siteName } from "@/lib/site";
@@ -15,8 +19,17 @@ export interface Topic {
  * pages can keep their typographically styled default headlines until the
  * owner writes her own.
  */
+export type FontTheme =
+  | "newsreader"
+  | "literata"
+  | "garamond"
+  | "source-serif";
+export type AccentTheme = "bronze" | "forest" | "oxblood" | "lake";
+
 export interface SiteSettings {
   siteName: string;
+  fontTheme: FontTheme;
+  accentTheme: AccentTheme;
   tagline: string;
   authorName: string;
   /** Lowercase noun for one piece of writing, e.g. "essay". */
@@ -66,6 +79,44 @@ function titleCase(value: string): string {
   return value.charAt(0).toUpperCase() + value.slice(1);
 }
 
+const FONT_THEMES: FontTheme[] = [
+  "newsreader",
+  "literata",
+  "garamond",
+  "source-serif",
+];
+const ACCENT_THEMES: AccentTheme[] = ["bronze", "forest", "oxblood", "lake"];
+
+function resolveFont(value: string | undefined): FontTheme {
+  return FONT_THEMES.includes(value as FontTheme)
+    ? (value as FontTheme)
+    : "newsreader";
+}
+
+function resolveAccent(value: string | undefined): AccentTheme {
+  return ACCENT_THEMES.includes(value as AccentTheme)
+    ? (value as AccentTheme)
+    : "bronze";
+}
+
+/**
+ * Theme attributes for the root <html> element. Published-only on purpose:
+ * the root shell must stay prerenderable, so it never consults Draft Mode.
+ */
+export async function getThemeSettings(): Promise<{
+  fontTheme: FontTheme;
+  accentTheme: AccentTheme;
+}> {
+  const doc = await sanityFetchPublished<SiteSettingsDoc | null>({
+    query: siteSettingsQuery,
+    tags: contentTags.settings(),
+  });
+  return {
+    fontTheme: resolveFont(doc?.fontTheme),
+    accentTheme: resolveAccent(doc?.accentTheme),
+  };
+}
+
 /** Fetch the settings singleton and resolve every field against defaults. */
 export async function getSiteSettings(): Promise<SiteSettings> {
   const doc = await sanityFetch<SiteSettingsDoc | null>({
@@ -87,6 +138,8 @@ export async function getSiteSettings(): Promise<SiteSettings> {
 
   return {
     siteName: words(doc?.siteName, siteName),
+    fontTheme: resolveFont(doc?.fontTheme),
+    accentTheme: resolveAccent(doc?.accentTheme),
     tagline: words(doc?.tagline, siteDescription),
     authorName: resolvedAuthor,
     postSingular,

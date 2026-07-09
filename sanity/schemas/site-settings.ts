@@ -14,11 +14,48 @@ export const siteSettingsType = defineType({
   type: "document",
   groups: [
     { name: "identity", title: "Identity & menu", default: true },
+    { name: "design", title: "Design" },
     { name: "home", title: "Home page" },
     { name: "newsletter", title: "Newsletter" },
     { name: "archive", title: "Archive & footer" },
   ],
   fields: [
+    defineField({
+      name: "fontTheme",
+      title: "Typeface (the site's serif voice)",
+      type: "string",
+      group: "design",
+      initialValue: "newsreader",
+      options: {
+        layout: "radio",
+        list: [
+          { title: "Newsreader — classic, bookish (default)", value: "newsreader" },
+          { title: "Literata — contemporary literary", value: "literata" },
+          { title: "EB Garamond — old-style elegance", value: "garamond" },
+          { title: "Source Serif — modern clarity", value: "source-serif" },
+        ],
+      },
+      description:
+        "Changes every headline and paragraph across the site. Publish to apply.",
+    }),
+    defineField({
+      name: "accentTheme",
+      title: "Accent colour",
+      type: "string",
+      group: "design",
+      initialValue: "bronze",
+      options: {
+        layout: "radio",
+        list: [
+          { title: "Bronze — warm, candlelit (default)", value: "bronze" },
+          { title: "Forest — deep green, still", value: "forest" },
+          { title: "Oxblood — dark red, solemn", value: "oxblood" },
+          { title: "Lake — slate blue, calm", value: "lake" },
+        ],
+      },
+      description:
+        "The single colour used for emphasis: links, buttons, ornaments.",
+    }),
     defineField({
       name: "siteName",
       title: "Site name",

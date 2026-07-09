@@ -5,15 +5,23 @@ export const articleType = defineType({
   name: "article",
   title: "Essay",
   type: "document",
+  // Word-style editing: opening a piece shows just the title and the page.
+  // Everything administrative lives in the "Details" tab.
+  groups: [
+    { name: "write", title: "Write", default: true },
+    { name: "details", title: "Details" },
+  ],
   fields: [
     defineField({
       name: "title",
       title: "Title",
       type: "string",
+      group: "write",
       validation: (rule) => rule.required(),
     }),
     defineField({
       name: "slug",
+      group: "details",
       title: "Slug",
       type: "slug",
       description: "The essay's address on the site. Generated from the title.",
@@ -22,6 +30,7 @@ export const articleType = defineType({
     }),
     defineField({
       name: "excerpt",
+      group: "details",
       title: "Excerpt",
       type: "text",
       rows: 3,
@@ -31,6 +40,7 @@ export const articleType = defineType({
     }),
     defineField({
       name: "author",
+      group: "details",
       title: "Author",
       type: "reference",
       to: [{ type: "author" }],
@@ -38,12 +48,14 @@ export const articleType = defineType({
     }),
     defineField({
       name: "categories",
+      group: "details",
       title: "Categories",
       type: "array",
       of: [{ type: "reference", to: [{ type: "category" }] }],
     }),
     defineField({
       name: "coverImage",
+      group: "details",
       title: "Cover image",
       type: "image",
       description: "Optional. Shown atop the essay and in social previews.",
@@ -62,10 +74,14 @@ export const articleType = defineType({
       name: "body",
       title: "Body",
       type: "blockContent",
+      group: "write",
+      description:
+        "Write here like a document: headings, quotes, scripture, pull quotes, and images from the toolbar.",
       validation: (rule) => rule.required(),
     }),
     defineField({
       name: "publishedAt",
+      group: "details",
       title: "Published at",
       type: "datetime",
       initialValue: () => new Date().toISOString(),

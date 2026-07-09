@@ -27,6 +27,8 @@ const siteSettings = {
   _id: "siteSettings",
   _type: "siteSettings",
   siteName: "WritingFaith",
+  fontTheme: "newsreader",
+  accentTheme: "bronze",
   tagline:
     "Thoughtful long-form writing on Christian faith, hope, and everyday life.",
   authorName: "Veruschka Pestano",
