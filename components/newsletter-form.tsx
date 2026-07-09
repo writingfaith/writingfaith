@@ -44,6 +44,7 @@ export function NewsletterForm({ centered = false }: { centered?: boolean }) {
           tabIndex={-1}
           autoComplete="off"
           aria-hidden="true"
+          hidden
           className="hidden"
         />
         <button
