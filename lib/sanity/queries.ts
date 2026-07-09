@@ -140,6 +140,8 @@ export const siteSettingsQuery = groq`
     authorName,
     postLabelSingular,
     postLabelPlural,
+    aboutLabel,
+    searchLabel,
     heroEyebrow,
     heroHeading,
     heroIntro,

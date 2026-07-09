@@ -21,8 +21,8 @@ export async function SiteFooter() {
 
   const explore = [
     { href: "/essays", label: settings.postPluralTitle },
-    { href: "/search", label: "Search" },
-    { href: "/about", label: "About" },
+    { href: "/search", label: settings.searchLabel },
+    { href: "/about", label: settings.aboutLabel },
     { href: "/contact", label: "Contact" },
     { href: "/feed", label: "Newsletter" },
   ];

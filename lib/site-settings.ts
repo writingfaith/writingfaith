@@ -25,6 +25,8 @@ export interface SiteSettings {
   postPlural: string;
   /** Capitalised plural for navigation and headings. */
   postPluralTitle: string;
+  aboutLabel: string;
+  searchLabel: string;
   heroEyebrow: string;
   heroHeading?: string;
   heroIntro: string;
@@ -90,6 +92,8 @@ export async function getSiteSettings(): Promise<SiteSettings> {
     postSingular,
     postPlural,
     postPluralTitle: titleCase(postPlural),
+    aboutLabel: words(doc?.aboutLabel, "About"),
+    searchLabel: words(doc?.searchLabel, "Search"),
     heroEyebrow: words(doc?.heroEyebrow, `${titleCase(postPlural)} on faith`),
     heroHeading: doc?.heroHeading?.trim() || undefined,
     heroIntro: words(

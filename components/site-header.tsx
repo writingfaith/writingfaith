@@ -14,8 +14,8 @@ export async function SiteHeader() {
 
   const navigation: Array<{ href: string; label: string }> = [
     { href: "/essays", label: settings.postPluralTitle },
-    { href: "/about", label: "About" },
-    { href: "/search", label: "Search" },
+    { href: "/about", label: settings.aboutLabel },
+    { href: "/search", label: settings.searchLabel },
   ];
 
   return (

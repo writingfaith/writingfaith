@@ -66,6 +66,8 @@ export interface SiteSettingsDoc {
   authorName?: string;
   postLabelSingular?: string;
   postLabelPlural?: string;
+  aboutLabel?: string;
+  searchLabel?: string;
   heroEyebrow?: string;
   heroHeading?: string;
   heroIntro?: string;
