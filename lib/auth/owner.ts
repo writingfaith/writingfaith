@@ -10,10 +10,12 @@ export type OwnerAccess =
 
 export function ownerEmails(): string[] {
   const configured = process.env.ADMIN_EMAILS ?? ownerEmail;
-  return configured
+  const emails = configured
     .split(",")
     .map((email) => normalizeEmail(email))
     .filter((email): email is string => Boolean(email));
+
+  return emails.length > 0 ? emails : [ownerEmail];
 }
 
 export function isOwnerEmail(email: unknown): email is string {
@@ -41,6 +43,9 @@ export function safeRedirectPath(
     return fallback;
   }
   if (trimmed.includes("\\")) {
+    return fallback;
+  }
+  if (/[\u0000-\u001f\u007f]/.test(trimmed)) {
     return fallback;
   }
   return trimmed;

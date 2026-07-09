@@ -7,6 +7,7 @@ import {
 
 import { imageDimensions, imageUrl } from "@/lib/sanity/image";
 import type { SanityImage as SanityImageValue } from "@/lib/sanity/types";
+import { safeContentHref } from "@/lib/security/url";
 import { SanityImage } from "./sanity-image";
 
 /**
@@ -23,7 +24,8 @@ const components: PortableTextComponents = {
   },
   marks: {
     link: ({ children, value }) => {
-      const href: string = value?.href ?? "";
+      const href = safeContentHref(value?.href);
+      if (!href) return <>{children}</>;
       if (href.startsWith("/")) {
         return <Link href={href}>{children}</Link>;
       }

@@ -7,6 +7,7 @@ import { EssayList } from "@/components/essay-list";
 import { client } from "@/lib/sanity/client";
 import { searchArticlesQuery } from "@/lib/sanity/queries";
 import type { ArticlePreview } from "@/lib/sanity/types";
+import { normalizeSearchQuery } from "@/lib/validate";
 
 export const metadata: Metadata = {
   title: "Search",
@@ -63,7 +64,7 @@ async function SearchContent({
 }) {
   const params = await searchParams;
   const raw = Array.isArray(params.q) ? params.q[0] : params.q;
-  const query = (raw ?? "").trim().slice(0, 80);
+  const query = normalizeSearchQuery(raw);
   const results = query ? await searchArticles(query) : null;
 
   return (

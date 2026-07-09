@@ -3,6 +3,7 @@ import type { PortableTextBlock } from "@portabletext/react";
 
 import { imageDimensions, imageUrl } from "@/lib/sanity/image";
 import type { Article, SanityImage } from "@/lib/sanity/types";
+import { safeContentHref } from "@/lib/security/url";
 import { absoluteUrl, authorName, siteDescription, siteName, siteUrl } from "@/lib/site";
 
 /** Escape a string for use in XML text nodes and attributes. */
@@ -21,6 +22,12 @@ function xml(value: string): string {
  * `toHTML` escapes all text content itself.
  */
 const feedComponents: Partial<PortableTextHtmlComponents> = {
+  marks: {
+    link: ({ children, value }) => {
+      const href = safeContentHref((value as { href?: unknown } | undefined)?.href);
+      return href ? `<a href="${xml(href)}">${children}</a>` : String(children ?? "");
+    },
+  },
   types: {
     scripture: ({ value }) => {
       const v = value as { passage?: string; reference?: string; translation?: string };

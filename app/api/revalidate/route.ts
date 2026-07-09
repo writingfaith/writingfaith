@@ -2,6 +2,12 @@ import { revalidateTag } from "next/cache";
 import type { NextRequest } from "next/server";
 import { parseBody } from "next-sanity/webhook";
 
+const allowedTypes = new Set(["article", "author", "category", "page"]);
+const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const jsonHeaders = {
+  "Cache-Control": "no-store",
+};
+
 /**
  * Sanity → Next.js publish webhook.
  *
@@ -17,7 +23,7 @@ export async function POST(req: NextRequest) {
   if (!secret) {
     return Response.json(
       { error: "SANITY_REVALIDATE_SECRET is not configured" },
-      { status: 500 },
+      { status: 500, headers: jsonHeaders },
     );
   }
 
@@ -28,10 +34,28 @@ export async function POST(req: NextRequest) {
     }>(req, secret);
 
     if (!isValidSignature) {
-      return Response.json({ error: "Invalid signature" }, { status: 401 });
+      return Response.json(
+        { error: "Invalid signature" },
+        { status: 401, headers: jsonHeaders },
+      );
     }
     if (!body?._type) {
-      return Response.json({ error: "Missing _type in body" }, { status: 400 });
+      return Response.json(
+        { error: "Missing _type in body" },
+        { status: 400, headers: jsonHeaders },
+      );
+    }
+    if (!allowedTypes.has(body._type)) {
+      return Response.json(
+        { error: "Unsupported document type" },
+        { status: 400, headers: jsonHeaders },
+      );
+    }
+    if (body.slug && !slugPattern.test(body.slug)) {
+      return Response.json(
+        { error: "Invalid slug" },
+        { status: 400, headers: jsonHeaders },
+      );
     }
 
     const tags = new Set<string>([body._type]);
@@ -48,11 +72,15 @@ export async function POST(req: NextRequest) {
       revalidateTag(tag, { expire: 0 });
     }
 
-    return Response.json({ revalidated: true, tags: [...tags] });
-  } catch (error) {
     return Response.json(
-      { error: error instanceof Error ? error.message : "Unknown error" },
-      { status: 500 },
+      { revalidated: true },
+      { headers: jsonHeaders },
+    );
+  } catch (error) {
+    console.error("[revalidate] webhook failed:", error);
+    return Response.json(
+      { error: "Webhook processing failed" },
+      { status: 500, headers: jsonHeaders },
     );
   }
 }

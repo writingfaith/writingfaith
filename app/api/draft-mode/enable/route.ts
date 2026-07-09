@@ -19,7 +19,10 @@ export async function GET(request: NextRequest) {
   if (access.status !== "authorized") {
     return Response.json(
       { error: "Studio draft preview is restricted to the site owner." },
-      { status: access.status === "unauthenticated" ? 401 : 403 },
+      {
+        status: access.status === "unauthenticated" ? 401 : 403,
+        headers: { "Cache-Control": "no-store" },
+      },
     );
   }
 

@@ -5,11 +5,12 @@ import type { NextRequest } from "next/server";
 import { db } from "@/lib/db";
 import { newsletterSubscriptions } from "@/lib/db/schema";
 import { syncContactToResend } from "@/lib/newsletter/resend-sync";
+import { isNewsletterToken } from "@/lib/newsletter/tokens";
 
 /** One-click unsubscribe link target (present in every newsletter email). */
 export async function GET(request: NextRequest) {
   const token = request.nextUrl.searchParams.get("token");
-  if (!token) redirect("/newsletter/invalid");
+  if (!isNewsletterToken(token)) redirect("/newsletter/invalid");
 
   const [subscription] = await db
     .select()
