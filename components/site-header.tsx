@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 
 import { AccountNav } from "@/components/account-nav";
+import { NavLink } from "@/components/nav-link";
 
 const navigation: Array<{ href: string; label: string }> = [
   { href: "/essays", label: "Essays" },
@@ -28,9 +29,7 @@ export function SiteHeader() {
           <ul className="flex flex-wrap items-baseline justify-center gap-x-7 gap-y-2 font-sans text-[0.8125rem] uppercase tracking-[0.16em] text-ink-muted [&_a]:whitespace-nowrap">
             {navigation.map((item) => (
               <li key={item.href}>
-                <Link href={item.href} className="nav-link">
-                  {item.label}
-                </Link>
+                <NavLink href={item.href}>{item.label}</NavLink>
               </li>
             ))}
             <li>

@@ -103,6 +103,8 @@ body {
   font-optical-sizing: auto;
   text-rendering: optimizeLegibility;
   font-kerning: normal;
+  /* Old-style figures sit inside running serif text like lowercase letters. */
+  font-variant-numeric: oldstyle-nums;
 }
 
 /* Filmic grain: the faint tooth of real paper. Fixed layer, no requests. */
@@ -137,6 +139,8 @@ body::after {
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--ink-faint);
+  /* Labels are wayfinding: lining tabular figures, never old-style. */
+  font-variant-numeric: lining-nums tabular-nums;
 }
 
 /* Display headline (mastheads, essay titles). */
@@ -332,10 +336,25 @@ body::after {
 
 .essay-body {
   max-width: var(--measure);
+  /* Quotation marks hang into the margin so the text block stays optically flush. */
+  hanging-punctuation: first last;
 }
 
 .essay-body > * + * {
   margin-block-start: 1.45em;
+}
+
+.essay-body p {
+  text-wrap: pretty;
+}
+
+/* At phone measures, hyphenation keeps the rag calm without justifying. */
+@media (max-width: 40rem) {
+  .essay-body p {
+    -webkit-hyphens: auto;
+    hyphens: auto;
+    hyphenate-limit-chars: 7 4 3;
+  }
 }
 
 /* Drop cap on the opening paragraph — the oldest premium signal there is. */
@@ -611,6 +630,98 @@ article figure img {
 .nav-link:hover {
   color: var(--ink);
   background-size: 100% 1px;
+}
+
+/* The page you are on keeps its underline drawn. */
+.nav-link[aria-current="page"] {
+  color: var(--ink);
+  background-size: 100% 1px;
+  background-image: linear-gradient(var(--accent), var(--accent));
+}
+
+/* ------------------------------------------------------------------ */
+/* The reading ribbon — a bookmark ribbon drawn along the top edge as  */
+/* the reader moves through an essay. Pure CSS scroll timeline: where  */
+/* unsupported it simply never appears, and reduced motion removes it. */
+/* ------------------------------------------------------------------ */
+
+.reading-ribbon {
+  display: none;
+}
+
+@supports (animation-timeline: scroll()) {
+  .reading-ribbon {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    z-index: 90;
+    pointer-events: none;
+    background: linear-gradient(
+      90deg,
+      var(--accent),
+      var(--accent-strong)
+    );
+    transform-origin: 0 50%;
+    transform: scaleX(0);
+    animation: ribbon-advance linear both;
+    animation-timeline: scroll();
+  }
+
+  @keyframes ribbon-advance {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reading-ribbon {
+    display: none !important;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Print: an essay leaves here looking like a typescript, not a page   */
+/* capture. Chrome, forms, and atmosphere all step aside.              */
+/* ------------------------------------------------------------------ */
+
+@media print {
+  body {
+    background: #fff;
+    color: #000;
+  }
+
+  body::after,
+  .masthead nav,
+  .reading-ribbon,
+  .hero-wash::before,
+  footer,
+  form {
+    display: none !important;
+  }
+
+  .reveal,
+  .reveal-late,
+  .reveal-1,
+  .reveal-2,
+  .reveal-3,
+  .reveal-4,
+  .reveal-scroll {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .essay-body a {
+    color: inherit;
+    text-decoration: none;
+  }
 }
 
 /* The publication's mark above every scripture passage. */

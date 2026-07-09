@@ -7,7 +7,7 @@ import { JsonLd } from "@/components/json-ld";
 import { AuthorMark, Ornament } from "@/components/ornaments";
 import { EssayBody } from "@/components/portable-text";
 import { SanityImage } from "@/components/sanity-image";
-import { formatDate } from "@/lib/format";
+import { formatDate, readingTimeMinutes } from "@/lib/format";
 import { client } from "@/lib/sanity/client";
 import { contentTags, sanityFetch } from "@/lib/sanity/fetch";
 import { imageDimensions, imageUrl } from "@/lib/sanity/image";
@@ -84,9 +84,12 @@ export default async function EssayPage({
   const cover = article.coverImage;
   const coverSrc = cover ? imageUrl(cover) : null;
   const coverDimensions = cover ? imageDimensions(cover) : null;
+  const minutes = readingTimeMinutes(article.body);
 
   return (
     <div className="mx-auto max-w-4xl px-6">
+      {/* Bookmark ribbon: reading progress along the top edge. */}
+      <div className="reading-ribbon" aria-hidden="true" />
       <JsonLd
         data={{
           "@context": "https://schema.org",
@@ -122,6 +125,8 @@ export default async function EssayPage({
                 </Link>
               </span>
             ))}
+            <span aria-hidden="true"> · </span>
+            {minutes} min read
           </p>
           <h1 className="display mt-6">{article.title}</h1>
           {article.author && (

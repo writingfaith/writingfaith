@@ -77,26 +77,15 @@ export async function SiteFooter() {
           </nav>
         </div>
         <Ornament className="mt-12" />
-        <div className="mt-6 flex flex-col items-center gap-4 font-sans text-sm text-ink-faint sm:flex-row sm:justify-between">
+        <div className="mt-6 flex flex-col items-center gap-2 text-center font-sans text-sm text-ink-faint sm:flex-row sm:justify-between sm:text-left">
           <p>© {new Date().getFullYear()} WritingFaith. All rights reserved.</p>
-          <nav aria-label="Legal">
-            <ul className="flex flex-wrap justify-center gap-x-5 gap-y-2">
-              {[
-                { href: "/privacy", label: "Privacy Policy" },
-                { href: "/terms", label: "Terms of Service" },
-                { href: "/disclaimer", label: "Disclaimer" },
-              ].map((item) => (
-                <li key={item.href}>
-                  <Link
-                    href={item.href}
-                    className="text-ink-faint no-underline transition-colors hover:text-ink"
-                  >
-                    {item.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
+          {/* Colophon: the closing line of a well-made book. */}
+          <p>
+            Set in Newsreader &amp; Instrument Sans ·{" "}
+            <span lang="la" className="italic">
+              Soli Deo Gloria
+            </span>
+          </p>
         </div>
       </div>
     </footer>
