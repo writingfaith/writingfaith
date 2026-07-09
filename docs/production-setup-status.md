@@ -1,6 +1,6 @@
 # WritingFaith production setup status
 
-Last updated: 2026-07-08
+Last updated: 2026-07-09
 
 ## Completed
 
@@ -42,7 +42,7 @@ Live checks after redeploy:
 - `/feed` returns 200.
 - `/feed.xml` returns 200.
 - `/studio` returns 200.
-- `/api/health` should return 200 after the next deployment that includes the route added in this update.
+- `/api/health` returns 200.
 
 ## Remaining Production Blocker
 
