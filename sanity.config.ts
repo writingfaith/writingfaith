@@ -40,4 +40,15 @@ export default defineConfig({
     templates: (templates) =>
       templates.filter(({ schemaType }) => schemaType !== "siteSettings"),
   },
+
+  document: {
+    // The settings singleton must never be deleted, duplicated, or
+    // unpublished from the Studio — only edited and published.
+    actions: (actions, { schemaType }) =>
+      schemaType === "siteSettings"
+        ? actions.filter(({ action }) =>
+            ["publish", "discardChanges", "restore"].includes(action ?? ""),
+          )
+        : actions,
+  },
 });
