@@ -563,7 +563,9 @@ article figure img {
 
 @keyframes rise {
   from {
-    opacity: 0;
+    /* Content must remain readable if a browser pauses animations during
+       load, restores a tab, or captures the page before the timeline runs. */
+    opacity: 1;
     transform: translateY(0.65rem);
   }
   to {
@@ -708,14 +710,16 @@ article figure img {
   top: -1px;
   left: 0;
   height: 1px;
-  width: 2rem;
+  width: 100%;
   background: var(--accent);
   opacity: 0.85;
-  transition: width 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  transform: scaleX(0.14);
+  transform-origin: left center;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .topic-rule:hover::before {
-  width: 100%;
+  transform: scaleX(1);
 }
 
 @media (prefers-reduced-motion: reduce) {
