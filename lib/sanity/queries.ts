@@ -8,27 +8,38 @@ const imageProjection = /* groq */ `{
 
 const articleFields = /* groq */ `
   _id,
+  _updatedAt,
   title,
   "slug": slug.current,
   excerpt,
   publishedAt,
+  "tags": coalesce(tags, []),
   coverImage ${imageProjection},
   "author": author->{ name, "slug": slug.current, bio },
   "categories": coalesce(categories[]->{ title, "slug": slug.current }, [])
 `;
 
+/**
+ * `$preview == true` lets the owner's own Draft Mode session see a scheduled
+ * essay (publishedAt in the future) before it goes live; every other reader
+ * only ever sees `publishedAt <= now()`. Reads that never pass `$preview`
+ * resolve it to null, which fails `== true` and keeps the filter active —
+ * the safe default for public, unauthenticated queries.
+ */
+const visibleNow = /* groq */ `($preview == true || publishedAt <= now())`;
+
 export const allArticlesQuery = groq`
-  *[_type == "article" && defined(slug.current)]
+  *[_type == "article" && defined(slug.current) && ${visibleNow}]
     | order(publishedAt desc) { ${articleFields} }
 `;
 
 export const latestArticlesQuery = groq`
-  *[_type == "article" && defined(slug.current)]
+  *[_type == "article" && defined(slug.current) && ${visibleNow}]
     | order(publishedAt desc) [0...3] { ${articleFields} }
 `;
 
 export const articleBySlugQuery = groq`
-  *[_type == "article" && slug.current == $slug][0] {
+  *[_type == "article" && slug.current == $slug && ${visibleNow}][0] {
     ${articleFields},
     body[] {
       ...,
@@ -37,8 +48,9 @@ export const articleBySlugQuery = groq`
   }
 `;
 
+/** Build-time static params: always published-only, regardless of caller. */
 export const articleSlugsQuery = groq`
-  *[_type == "article" && defined(slug.current)].slug.current
+  *[_type == "article" && defined(slug.current) && publishedAt <= now()].slug.current
 `;
 
 export const pageBySlugQuery = groq`
@@ -53,15 +65,27 @@ export const pageBySlugQuery = groq`
   }
 `;
 
-/** Two more essays for the "continue reading" footer of an essay. */
-export const relatedArticlesQuery = groq`
-  *[_type == "article" && defined(slug.current) && slug.current != $slug]
-    | order(publishedAt desc) [0...2] { ${articleFields} }
+/**
+ * A candidate pool for the "continue reading" footer — recent essays other
+ * than the one being read, each carrying its category slugs and quoted
+ * scripture books so lib/related.ts can rank by kinship rather than just
+ * recency. Always published-only: "related" is supplementary, not the
+ * document being previewed.
+ */
+export const relatedCandidatesQuery = groq`
+  *[_type == "article" && defined(slug.current) && slug.current != $slug
+      && publishedAt <= now()]
+    | order(publishedAt desc) [0...24] {
+      ${articleFields},
+      "categorySlugs": coalesce(categories[]->slug.current, []),
+      "scriptureBooks": coalesce(body[_type == "scripture"].reference, []),
+      "themeTags": coalesce(tags, [])
+    }
 `;
 
 /** Lean projection for dynamic OG images. */
 export const articleOgQuery = groq`
-  *[_type == "article" && slug.current == $slug][0] {
+  *[_type == "article" && slug.current == $slug && publishedAt <= now()][0] {
     title,
     publishedAt,
     "author": author->name
@@ -73,7 +97,8 @@ export const categoriesWithCountQuery = groq`
     title,
     "slug": slug.current,
     description,
-    "count": count(*[_type == "article" && references(^._id) && defined(slug.current)])
+    "count": count(*[_type == "article" && references(^._id) && defined(slug.current)
+      && publishedAt <= now()])
   } [count > 0]
 `;
 
@@ -91,44 +116,57 @@ export const categorySlugsQuery = groq`
 
 export const articlesByCategoryQuery = groq`
   *[_type == "article" && defined(slug.current)
-      && $slug in categories[]->slug.current]
+      && $slug in categories[]->slug.current && ${visibleNow}]
     | order(publishedAt desc) { ${articleFields} }
 `;
 
 /**
  * Launch-tier search (ADR 0001 §Additions): GROQ full-text matching over
- * title, excerpt and body, ranked so title hits outrank body hits.
- * $q is the user's terms with a trailing wildcard, e.g. "hope*".
+ * title, excerpt and body, ranked so title hits outrank body hits. $q is the
+ * user's terms with a trailing wildcard, e.g. "hope*". Always
+ * published-only — search must never surface a scheduled or draft essay.
+ * `bodyText` is consumed server-side only (to build a highlighted snippet)
+ * and is never forwarded to the client.
  */
 export const searchArticlesQuery = groq`
-  *[_type == "article" && defined(slug.current)
+  *[_type == "article" && defined(slug.current) && publishedAt <= now()
       && (title match $q || excerpt match $q || pt::text(body) match $q)]
     | score(
         boost(title match $q, 4),
         boost(excerpt match $q, 2),
         pt::text(body) match $q
       )
-    | order(_score desc, publishedAt desc) [0...20] { ${articleFields} }
+    | order(_score desc, publishedAt desc) [0...20] {
+      ${articleFields},
+      "bodyText": pt::text(body)
+    }
 `;
 
-/** Everything the sitemap needs, in one round trip. */
+/** Everything the sitemap needs, in one round trip. Published-only. */
 export const sitemapQuery = groq`{
-  "articles": *[_type == "article" && defined(slug.current)]
+  "articles": *[_type == "article" && defined(slug.current) && publishedAt <= now()]
     { "slug": slug.current, _updatedAt },
   "categories": *[_type == "category" && defined(slug.current)
-      && count(*[_type == "article" && references(^._id)]) > 0]
+      && count(*[_type == "article" && references(^._id) && publishedAt <= now()]) > 0]
     { "slug": slug.current, _updatedAt }
 }`;
 
-/** Full-content feed: the most recent essays including their bodies. */
+/** Full-content feed: the most recent published essays including their bodies. */
 export const feedQuery = groq`
-  *[_type == "article" && defined(slug.current)]
+  *[_type == "article" && defined(slug.current) && publishedAt <= now()]
     | order(publishedAt desc) [0...20] {
     ${articleFields},
     body[] {
       ...,
       _type == "image" => ${imageProjection}
     }
+  }
+`;
+
+/** Lean lookup for the quote-card image route: title + attribution only. */
+export const articleTitleBySlugQuery = groq`
+  *[_type == "article" && slug.current == $slug && publishedAt <= now()][0] {
+    title
   }
 `;
 

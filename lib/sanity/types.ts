@@ -39,10 +39,12 @@ export interface AuthorRef {
 /** The fields shared by essay lists and the essay page. */
 export interface ArticlePreview {
   _id: string;
+  _updatedAt: string;
   title: string;
   slug: string;
   excerpt: string;
   publishedAt: string;
+  tags: string[];
   coverImage?: SanityImage;
   author?: AuthorRef;
   categories: CategoryRef[];
@@ -50,6 +52,18 @@ export interface ArticlePreview {
 
 export interface Article extends ArticlePreview {
   body: PortableTextBlock[];
+}
+
+/** A related-essay candidate, carrying the signals lib/related.ts scores on. */
+export interface RelatedCandidateDoc extends ArticlePreview {
+  categorySlugs: string[];
+  scriptureBooks: string[];
+  themeTags: string[];
+}
+
+/** A search hit as read from Sanity — bodyText is server-only, never sent to the client. */
+export interface SearchHitDoc extends ArticlePreview {
+  bodyText: string;
 }
 
 export interface SitePage {

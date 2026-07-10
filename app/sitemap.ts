@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { cacheLife, cacheTag } from "next/cache";
 
 import { client } from "@/lib/sanity/client";
+import { scheduledCacheProfile } from "@/lib/sanity/fetch";
 import { sitemapQuery } from "@/lib/sanity/queries";
 import { absoluteUrl } from "@/lib/site";
 
@@ -13,7 +14,7 @@ interface SitemapContent {
 async function getSitemapContent(): Promise<SitemapContent> {
   "use cache";
   cacheTag("article", "category");
-  cacheLife("max");
+  cacheLife(scheduledCacheProfile);
   return client.fetch<SitemapContent>(sitemapQuery);
 }
 

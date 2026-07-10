@@ -1,4 +1,4 @@
-import { defineField, defineType } from "sanity";
+import { defineArrayMember, defineField, defineType } from "sanity";
 
 /** An essay — the core document type of WritingFaith. */
 export const articleType = defineType({
@@ -17,7 +17,7 @@ export const articleType = defineType({
       title: "Title",
       type: "string",
       group: "write",
-      validation: (rule) => rule.required(),
+      validation: (rule) => rule.required().max(120),
     }),
     defineField({
       name: "slug",
@@ -54,6 +54,21 @@ export const articleType = defineType({
       of: [{ type: "reference", to: [{ type: "category" }] }],
     }),
     defineField({
+      name: "tags",
+      group: "details",
+      title: "Themes",
+      type: "array",
+      description:
+        "Specific ideas that connect this essay to others — for example prayer, waiting, motherhood, grief, or grace. Used to curate related reading.",
+      of: [
+        defineArrayMember({
+          type: "string",
+          validation: (rule) => rule.required().min(2).max(40),
+        }),
+      ],
+      validation: (rule) => rule.unique().max(8),
+    }),
+    defineField({
       name: "coverImage",
       group: "details",
       title: "Cover image",
@@ -84,6 +99,8 @@ export const articleType = defineType({
       group: "details",
       title: "Published at",
       type: "datetime",
+      description:
+        "To schedule this essay, choose a future date and publish it now. It will remain private, then appear automatically within about five minutes of that time.",
       initialValue: () => new Date().toISOString(),
       validation: (rule) => rule.required(),
     }),
@@ -104,15 +121,17 @@ export const articleType = defineType({
     },
     prepare({ title, author, date, media }) {
       const formatted = date
-        ? new Date(date).toLocaleDateString("en-GB", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
+        ? new Date(date).toLocaleString("en-AU", {
+            dateStyle: "medium",
+            timeStyle: "short",
           })
         : "Unpublished";
+      const scheduled = date && new Date(date).getTime() > Date.now();
       return {
         title,
-        subtitle: [formatted, author].filter(Boolean).join(" · "),
+        subtitle: [scheduled ? `Scheduled ${formatted}` : formatted, author]
+          .filter(Boolean)
+          .join(" · "),
         media,
       };
     },

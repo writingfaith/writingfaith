@@ -1,7 +1,5 @@
-import { cacheLife, cacheTag } from "next/cache";
-
 import { brandImage, OG_SIZE } from "@/lib/og";
-import { client } from "@/lib/sanity/client";
+import { contentTags, sanityFetchPublished } from "@/lib/sanity/fetch";
 import { articleOgQuery } from "@/lib/sanity/queries";
 import { formatDate } from "@/lib/format";
 
@@ -16,10 +14,12 @@ interface OgArticle {
 }
 
 async function getOgArticle(slug: string): Promise<OgArticle | null> {
-  "use cache";
-  cacheTag("article", `article:${slug}`);
-  cacheLife("max");
-  return client.fetch<OgArticle | null>(articleOgQuery, { slug });
+  return sanityFetchPublished<OgArticle | null>({
+    query: articleOgQuery,
+    params: { slug },
+    tags: contentTags.article(slug),
+    timed: true,
+  });
 }
 
 export default async function Image({

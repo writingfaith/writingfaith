@@ -20,6 +20,14 @@ const limiter = configured
     })
   : null;
 
+const quoteCardLimiter = configured
+  ? new Ratelimit({
+      redis: Redis.fromEnv(),
+      limiter: Ratelimit.slidingWindow(30, "1 h"),
+      prefix: "writingfaith:quote-card",
+    })
+  : null;
+
 let warned = false;
 
 /**
@@ -37,5 +45,12 @@ export async function allowRequest(key: string): Promise<boolean> {
     return true;
   }
   const { success } = await limiter.limit(key);
+  return success;
+}
+
+/** A more generous public-media limit: enough to explore, bounded for cost. */
+export async function allowQuoteCardRequest(key: string): Promise<boolean> {
+  if (!quoteCardLimiter) return true;
+  const { success } = await quoteCardLimiter.limit(key);
   return success;
 }

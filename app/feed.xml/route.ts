@@ -2,6 +2,7 @@ import { cacheLife, cacheTag } from "next/cache";
 
 import { buildFeed } from "@/lib/feed";
 import { client } from "@/lib/sanity/client";
+import { scheduledCacheProfile } from "@/lib/sanity/fetch";
 import { feedQuery } from "@/lib/sanity/queries";
 import type { Article } from "@/lib/sanity/types";
 
@@ -13,7 +14,7 @@ import type { Article } from "@/lib/sanity/types";
 async function getFeed(): Promise<string> {
   "use cache";
   cacheTag("article");
-  cacheLife("max");
+  cacheLife(scheduledCacheProfile);
   const articles = await client.fetch<Article[]>(feedQuery);
   return buildFeed(articles);
 }

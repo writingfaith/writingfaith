@@ -511,6 +511,7 @@ body::after {
   letter-spacing: -0.012em;
   line-height: 1.22;
   text-wrap: balance;
+  scroll-margin-top: 3rem;
 }
 
 .essay-body h2 {
@@ -939,5 +940,227 @@ article figure img {
       color-mix(in oklab, var(--accent) 14%, transparent),
       transparent 74%
     );
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Search: matched terms, quietly.                                     */
+/* ------------------------------------------------------------------ */
+
+mark {
+  background-color: color-mix(in oklab, var(--accent) 24%, transparent);
+  color: inherit;
+  border-radius: 2px;
+  padding: 0 0.15em;
+}
+
+/* ------------------------------------------------------------------ */
+/* Table of contents — plain text, no numbering; a list isn't a        */
+/* sequence here, so the anti-pattern the design system warns against  */
+/* (numbered eyebrows on everything) doesn't apply.                    */
+/* ------------------------------------------------------------------ */
+
+.essay-toc {
+  max-width: var(--measure);
+  margin-inline: auto;
+  margin-block: 2.8em;
+  padding: 1.6rem clamp(1.25rem, 4vw, 2rem);
+  background: var(--vellum);
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+
+.toc-link {
+  display: inline-block;
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  color: var(--ink-muted);
+  text-decoration: none;
+  padding-bottom: 1px;
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1px;
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  transition:
+    background-size 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    color 0.2s ease;
+}
+
+.toc-link:hover {
+  color: var(--ink);
+  background-size: 100% 1px;
+}
+
+.toc-link[aria-current="location"] {
+  color: var(--accent-strong);
+  font-weight: 500;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toc-link {
+    transition: none;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Continue reading — a thin bronze fill traces how far the reader got.*/
+/* ------------------------------------------------------------------ */
+
+.continue-reading {
+  max-width: var(--measure);
+  margin: 2rem auto 0;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--rule);
+  color: var(--ink-muted);
+}
+
+.quote-share-hint {
+  max-width: var(--measure);
+  margin: 2.75rem auto 0;
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--ink-faint);
+  text-align: center;
+}
+
+/* ------------------------------------------------------------------ */
+/* Quote sharing: a selection-triggered button, and the card dialog.   */
+/* ------------------------------------------------------------------ */
+
+.quote-share-button {
+  position: fixed;
+  z-index: 60;
+  transform: translateX(-50%);
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  padding: 0.5rem 0.85rem;
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 6px 20px -6px color-mix(in oklab, var(--ink) 45%, transparent);
+  animation: quote-button-in 0.18s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.quote-share-button::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: var(--ink);
+}
+
+@keyframes quote-button-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .quote-share-button {
+    background: var(--accent-strong);
+    color: var(--on-accent);
+  }
+
+  .quote-share-button::after {
+    border-top-color: var(--accent-strong);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quote-share-button {
+    animation: none;
+  }
+}
+
+.quote-dialog {
+  position: fixed;
+  inset: 0;
+  width: min(90vw, 34rem);
+  max-width: none;
+  max-height: min(90vh, 46rem);
+  margin: auto;
+  overflow: auto;
+  padding: 0;
+  border: 1px solid var(--rule-strong);
+  border-radius: 6px;
+  background: var(--paper-raised);
+  color: var(--ink);
+  box-shadow: 0 3px 8px color-mix(in oklab, var(--ink) 28%, transparent);
+}
+
+.quote-dialog::backdrop {
+  background: color-mix(in oklab, var(--ink) 55%, transparent);
+}
+
+.quote-dialog-body {
+  padding: 1.5rem;
+}
+
+.quote-dialog-preview {
+  width: 100%;
+  height: auto;
+  border-radius: 4px;
+  border: 1px solid var(--rule);
+}
+
+.quote-dialog-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 1.25rem;
+}
+
+.quote-dialog-actions .btn {
+  flex: 1;
+  min-width: 7rem;
+  text-align: center;
+}
+
+.quote-dialog-actions a.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.quote-dialog-status {
+  margin-top: 0.75rem;
+  min-height: 1.2em;
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  color: var(--ink-faint);
+  text-align: center;
+}
+
+@media (max-width: 32rem) {
+  .quote-dialog-body {
+    padding: 1rem;
+  }
+
+  .quote-dialog-actions .btn {
+    min-width: calc(50% - 0.3rem);
+    padding-inline: 0.8rem;
+  }
+}
+
+@media print {
+  .essay-toc,
+  .quote-share-hint,
+  .quote-share-button,
+  .quote-dialog,
+  .continue-reading {
+    display: none !important;
   }
 }

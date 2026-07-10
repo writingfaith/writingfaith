@@ -3,22 +3,34 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { EssayList } from "@/components/essay-list";
+import { EssayToc } from "@/components/essay-toc";
 import { JsonLd } from "@/components/json-ld";
 import { Ornament } from "@/components/ornaments";
 import { EssayBody } from "@/components/portable-text";
+import { QuoteSelector } from "@/components/quote-selector";
+import { ReadingProgressTracker } from "@/components/reading-progress-tracker";
 import { SanityImage } from "@/components/sanity-image";
-import { formatDate, readingTimeMinutes } from "@/lib/format";
+import {
+  formatDate,
+  readingTimeMinutes,
+  readingWordCount,
+} from "@/lib/format";
+import { extractHeadings } from "@/lib/headings";
+import { pickRelated } from "@/lib/related";
 import { client } from "@/lib/sanity/client";
 import { contentTags, sanityFetch } from "@/lib/sanity/fetch";
 import { imageDimensions, imageUrl } from "@/lib/sanity/image";
 import {
   articleBySlugQuery,
   articleSlugsQuery,
-  relatedArticlesQuery,
+  relatedCandidatesQuery,
 } from "@/lib/sanity/queries";
-import type { Article, ArticlePreview } from "@/lib/sanity/types";
+import type { Article, RelatedCandidateDoc } from "@/lib/sanity/types";
+import { extractScriptureBooks } from "@/lib/scripture";
 import { getSiteSettings } from "@/lib/site-settings";
 import { absoluteUrl, siteName } from "@/lib/site";
+
+const RELATED_COUNT = 2;
 
 /**
  * Prerender every published essay at build time; essays published after the
@@ -41,6 +53,7 @@ async function getArticle(slug: string) {
     query: articleBySlugQuery,
     params: { slug },
     tags: contentTags.article(slug),
+    timed: true,
   });
 }
 
@@ -52,17 +65,24 @@ export async function generateMetadata({
   const { slug } = await params;
   const article = await getArticle(slug);
   if (!article) return {};
+  const tags = [
+    ...article.categories.map((category) => category.title),
+    ...article.tags,
+  ];
 
   return {
     title: article.title,
     description: article.excerpt,
     alternates: { canonical: `/essays/${slug}` },
+    keywords: tags,
     openGraph: {
       type: "article",
       title: article.title,
       description: article.excerpt,
       publishedTime: article.publishedAt,
+      modifiedTime: article._updatedAt,
       authors: article.author ? [article.author.name] : undefined,
+      tags,
     },
   };
 }
@@ -76,11 +96,12 @@ export default async function EssayPage({
   const article = await getArticle(slug);
   if (!article) notFound();
 
-  const [related, settings] = await Promise.all([
-    sanityFetch<ArticlePreview[]>({
-      query: relatedArticlesQuery,
+  const [relatedCandidates, settings] = await Promise.all([
+    sanityFetch<RelatedCandidateDoc[]>({
+      query: relatedCandidatesQuery,
       params: { slug },
       tags: contentTags.article(),
+      timed: true,
     }),
     getSiteSettings(),
   ]);
@@ -89,26 +110,81 @@ export default async function EssayPage({
   const coverSrc = cover ? imageUrl(cover) : null;
   const coverDimensions = cover ? imageDimensions(cover) : null;
   const minutes = readingTimeMinutes(article.body);
+  const wordCount = readingWordCount(article.body);
+  const headings = extractHeadings(article.body);
+  const related = pickRelated(
+    {
+      categorySlugs: article.categories.map((category) => category.slug),
+      scriptureBooks: extractScriptureBooks(article.body),
+      themeTags: article.tags,
+    },
+    relatedCandidates,
+    RELATED_COUNT,
+  );
+  const articleBodyId = "essay-body";
 
   return (
     <div className="mx-auto max-w-4xl px-6">
       {/* Bookmark ribbon: reading progress along the top edge. */}
       <div className="reading-ribbon" aria-hidden="true" />
+      <ReadingProgressTracker
+        slug={slug}
+        title={article.title}
+        articleId={articleBodyId}
+      />
+      <QuoteSelector
+        slug={slug}
+        containerId={articleBodyId}
+        pageUrl={absoluteUrl(`/essays/${slug}`)}
+      />
       <JsonLd
         data={{
           "@context": "https://schema.org",
-          "@type": "Article",
-          headline: article.title,
-          description: article.excerpt,
-          datePublished: article.publishedAt,
-          image: [absoluteUrl(`/essays/${slug}/opengraph-image`)],
-          author: {
-            "@type": "Organization",
-            name: siteName,
-            url: absoluteUrl("/"),
-          },
-          publisher: { "@type": "Organization", name: siteName },
-          mainEntityOfPage: absoluteUrl(`/essays/${slug}`),
+          "@graph": [
+            {
+              "@type": "Article",
+              headline: article.title,
+              description: article.excerpt,
+              datePublished: article.publishedAt,
+              dateModified: article._updatedAt,
+              image: [absoluteUrl(`/essays/${slug}/opengraph-image`)],
+              author: {
+                "@type": "Organization",
+                name: siteName,
+                url: absoluteUrl("/"),
+              },
+              publisher: {
+                "@type": "Organization",
+                name: siteName,
+                url: absoluteUrl("/"),
+              },
+              mainEntityOfPage: absoluteUrl(`/essays/${slug}`),
+              articleSection: article.categories.map(
+                (category) => category.title,
+              ),
+              keywords: article.tags.join(", "),
+              wordCount,
+              timeRequired: `PT${minutes}M`,
+              isAccessibleForFree: true,
+            },
+            {
+              "@type": "BreadcrumbList",
+              itemListElement: [
+                {
+                  "@type": "ListItem",
+                  position: 1,
+                  name: "Essays",
+                  item: absoluteUrl("/essays"),
+                },
+                {
+                  "@type": "ListItem",
+                  position: 2,
+                  name: article.title,
+                  item: absoluteUrl(`/essays/${slug}`),
+                },
+              ],
+            },
+          ],
         }}
       />
       <article className="reveal py-16 sm:py-20">
@@ -151,8 +227,17 @@ export default async function EssayPage({
           </figure>
         )}
 
-        <div className="mx-auto mt-12 flex justify-center sm:mt-16">
-          <EssayBody value={article.body} />
+        <EssayToc headings={headings} />
+
+        <p className="quote-share-hint">
+          Select a passage to make a shareable quote card.
+        </p>
+
+        <div
+          id={articleBodyId}
+          className="mx-auto mt-6 flex scroll-mt-8 justify-center sm:mt-8"
+        >
+          <EssayBody value={article.body} headings={headings} />
         </div>
 
         <Ornament className="mx-auto mt-16 max-w-xs" />

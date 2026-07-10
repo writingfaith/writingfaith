@@ -24,10 +24,12 @@ export default async function EssaysPage() {
     sanityFetch<ArticlePreview[]>({
       query: allArticlesQuery,
       tags: contentTags.article(),
+      timed: true,
     }),
     sanityFetch<CategoryWithCount[]>({
       query: categoriesWithCountQuery,
       tags: contentTags.category(),
+      timed: true,
     }),
     getSiteSettings(),
   ]);

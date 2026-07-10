@@ -19,6 +19,15 @@ export const structure: StructureResolver = (S) =>
     .title("Content")
     .items([
       S.documentTypeListItem("article").title("Writing").icon(icon("compose")),
+      S.listItem()
+        .title("Scheduled")
+        .child(
+          S.documentList()
+            .title("Scheduled essays")
+            .schemaType("article")
+            .filter('_type == "article" && defined(publishedAt) && publishedAt > now()')
+            .defaultOrdering([{ field: "publishedAt", direction: "asc" }]),
+        ),
       S.divider(),
       S.documentTypeListItem("page").title("Pages").icon(icon("documents")),
       S.documentTypeListItem("category").title("Categories").icon(icon("tag")),

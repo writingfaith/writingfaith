@@ -60,6 +60,7 @@ export default async function CategoryPage({
     query: articlesByCategoryQuery,
     params: { slug },
     tags: contentTags.category(),
+    timed: true,
   });
 
   return (

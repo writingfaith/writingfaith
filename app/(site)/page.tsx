@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { EssayList, FeaturedEssay } from "@/components/essay-list";
+import { ContinueReading } from "@/components/continue-reading";
 import { HeroLight } from "@/components/hero-light";
 import { JsonLd } from "@/components/json-ld";
 import { NewsletterForm } from "@/components/newsletter-form";
@@ -16,6 +17,7 @@ export default async function HomePage() {
     sanityFetch<ArticlePreview[]>({
       query: latestArticlesQuery,
       tags: contentTags.article(),
+      timed: true,
     }),
     getSiteSettings(),
   ]);
@@ -74,6 +76,7 @@ export default async function HomePage() {
       </section>
 
       <div className="mx-auto max-w-4xl px-6">
+        <ContinueReading />
         {featured && (
           <>
             <Ornament className="reveal-late" />
