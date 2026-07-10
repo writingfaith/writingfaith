@@ -247,6 +247,38 @@ body::after {
   transform: scale(0.98);
 }
 
+/* On hover, a faint light passes across the one bronze button — the same
+   light that falls on the hero, caught for a moment. Transform-only. */
+.btn-primary {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  transform: translateX(-130%) skewX(-16deg);
+  background: linear-gradient(
+    100deg,
+    transparent 30%,
+    color-mix(in oklab, var(--on-accent) 16%, transparent) 50%,
+    transparent 70%
+  );
+}
+
+.btn-primary:hover::before {
+  transform: translateX(130%);
+  transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-primary::before {
+    display: none;
+  }
+}
+
 .btn:hover {
   border-color: var(--accent);
   color: var(--accent-strong);
@@ -353,6 +385,7 @@ body::after {
 .hero-wash {
   position: relative;
   isolation: isolate;
+  overflow: hidden;
 }
 
 .hero-wash::before {
@@ -366,6 +399,49 @@ body::after {
     transparent 72%
   );
   pointer-events: none;
+}
+
+/* A second, softer pool of light inside the hero. It breathes on its own
+   (weather, not neon) and, on fine-pointer devices, HeroLight leans it
+   gently toward the reader's hand — transform and opacity only. */
+.hero-glow {
+  position: absolute;
+  inset: -18%;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 40% 32% at 50% 8%,
+    color-mix(in oklab, var(--accent) 5%, transparent),
+    transparent 70%
+  );
+  animation: glow-breathe 9s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+@keyframes glow-breathe {
+  from {
+    opacity: 0.7;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .hero-glow {
+    background: radial-gradient(
+      ellipse 42% 34% at 50% 8%,
+      color-mix(in oklab, var(--accent) 10%, transparent),
+      transparent 72%
+    );
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-glow {
+    animation: none;
+    opacity: 1;
+  }
 }
 
 /* Vellum plate for set-apart moments (scripture, author, empty states). */
@@ -607,6 +683,28 @@ article figure img {
     animation: rise-soft linear both;
     animation-timeline: view();
     animation-range: entry 5% entry 45%;
+  }
+}
+
+/* Editorial images arrive like printed plates: they settle into place as
+   they enter the viewport. Same legibility floor as rise-soft — a stalled
+   timeline leaves the image dimmed, never missing. */
+@supports (animation-timeline: view()) {
+  .essay-body .essay-figure {
+    animation: plate-reveal linear both;
+    animation-timeline: view();
+    animation-range: entry 5% entry 50%;
+  }
+
+  @keyframes plate-reveal {
+    from {
+      opacity: 0.4;
+      transform: translateY(1rem) scale(0.988);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
   }
 }
 

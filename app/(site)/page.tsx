@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { EssayList, FeaturedEssay } from "@/components/essay-list";
+import { HeroLight } from "@/components/hero-light";
 import { JsonLd } from "@/components/json-ld";
 import { NewsletterForm } from "@/components/newsletter-form";
 import { OliveBranch, Ornament, SiteMark } from "@/components/ornaments";
@@ -44,8 +45,10 @@ export default async function HomePage() {
         }}
       />
 
-      {/* Hero — centered, lit faintly from above. */}
+      {/* Hero — centered, lit faintly from above; the light leans toward
+          the reader's pointer on desktop. */}
       <section className="hero-wash">
+        <HeroLight />
         <div className="mx-auto max-w-3xl px-6 pb-20 pt-24 text-center sm:pb-28 sm:pt-32">
           <p className="reveal-1 eyebrow">{settings.heroEyebrow}</p>
           <h1 className="reveal-2 display mx-auto mt-7 max-w-[18ch]">

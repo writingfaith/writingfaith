@@ -60,6 +60,16 @@ export async function subscribeToNewsletter(
       return { ok: true, message: confirmationMessage };
     }
 
+    // A confirmation email went out moments ago: a double-click or an
+    // impatient resubmit must not stack a second copy in the inbox. The
+    // token is left untouched so the email already sent keeps working.
+    if (
+      existing?.status === "pending" &&
+      Date.now() - existing.requestedAt.getTime() < CONFIRMATION_COOLDOWN_MS
+    ) {
+      return { ok: true, message: confirmationMessage };
+    }
+
     const token = crypto.randomUUID();
     if (existing) {
       await db
@@ -94,3 +104,6 @@ export async function subscribeToNewsletter(
 
 const confirmationMessage =
   "Almost there — check your inbox for a confirmation email.";
+
+/** Window during which repeat subscribe attempts reuse the email already sent. */
+const CONFIRMATION_COOLDOWN_MS = 15 * 60 * 1000;
