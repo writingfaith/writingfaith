@@ -11,6 +11,7 @@ import { structureTool } from "sanity/structure";
 import { visionTool } from "@sanity/vision";
 
 import { apiVersion, dataset, projectId, studioBasePath } from "./sanity/env";
+import { resolve } from "./sanity/presentation";
 import { schemaTypes } from "./sanity/schemas";
 import { structure } from "./sanity/structure";
 
@@ -23,9 +24,13 @@ export default defineConfig({
   dataset,
 
   plugins: [
-    structureTool({ structure }),
+    structureTool({ structure, title: "Write" }),
     // Live preview of the real site, with draft mode + click-to-edit overlays.
+    // `resolve` gives every document a "Used on…" banner that jumps straight
+    // into the preview, and lets clicks on the preview open the right document.
     presentationTool({
+      title: "Preview",
+      resolve,
       previewUrl: {
         previewMode: { enable: "/api/draft-mode/enable" },
       },

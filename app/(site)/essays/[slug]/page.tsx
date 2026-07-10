@@ -17,6 +17,7 @@ import {
   relatedArticlesQuery,
 } from "@/lib/sanity/queries";
 import type { Article, ArticlePreview } from "@/lib/sanity/types";
+import { getSiteSettings } from "@/lib/site-settings";
 import { absoluteUrl, siteName } from "@/lib/site";
 
 /**
@@ -75,11 +76,14 @@ export default async function EssayPage({
   const article = await getArticle(slug);
   if (!article) notFound();
 
-  const related = await sanityFetch<ArticlePreview[]>({
-    query: relatedArticlesQuery,
-    params: { slug },
-    tags: contentTags.article(),
-  });
+  const [related, settings] = await Promise.all([
+    sanityFetch<ArticlePreview[]>({
+      query: relatedArticlesQuery,
+      params: { slug },
+      tags: contentTags.article(),
+    }),
+    getSiteSettings(),
+  ]);
 
   const cover = article.coverImage;
   const coverSrc = cover ? imageUrl(cover) : null;
@@ -156,7 +160,7 @@ export default async function EssayPage({
         {/* The essay's sign-off: no byline — the writing stands on its own. */}
         <footer className="mx-auto mt-14 max-w-2xl text-center">
           <Link href="/about" className="link font-sans text-sm">
-            About {siteName}
+            About {settings.siteName}
           </Link>
         </footer>
       </article>
@@ -171,7 +175,7 @@ export default async function EssayPage({
               Continue reading
             </h2>
             <Link href="/essays" className="link font-sans text-sm">
-              All essays
+              All {settings.postPlural}
             </Link>
           </div>
           <div className="mt-2 border-t border-rule">

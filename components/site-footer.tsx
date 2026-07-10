@@ -3,7 +3,15 @@ import Link from "next/link";
 
 import { BrandMark } from "@/components/brand-mark";
 import { Ornament } from "@/components/ornaments";
-import { getSiteSettings } from "@/lib/site-settings";
+import { getSiteSettings, type FontTheme } from "@/lib/site-settings";
+
+/** Display names for the colophon, keyed by the Studio-selectable serif. */
+const SERIF_NAMES: Record<FontTheme, string> = {
+  newsreader: "Newsreader",
+  literata: "Literata",
+  garamond: "EB Garamond",
+  "source-serif": "Source Serif 4",
+};
 
 const trust = [
   { href: "/privacy", label: "Privacy" },
@@ -88,7 +96,7 @@ export async function SiteFooter() {
           </p>
           {/* Colophon: the closing line of a well-made book. */}
           <p>
-            Set in Newsreader &amp; Instrument Sans ·{" "}
+            Set in {SERIF_NAMES[settings.fontTheme]} &amp; Instrument Sans ·{" "}
             <span lang="la" className="italic">
               Soli Deo Gloria
             </span>
