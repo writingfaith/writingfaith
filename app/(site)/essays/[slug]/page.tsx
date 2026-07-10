@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 
 import { EssayList } from "@/components/essay-list";
 import { JsonLd } from "@/components/json-ld";
-import { AuthorMark, Ornament } from "@/components/ornaments";
+import { Ornament } from "@/components/ornaments";
 import { EssayBody } from "@/components/portable-text";
 import { SanityImage } from "@/components/sanity-image";
 import { formatDate, readingTimeMinutes } from "@/lib/format";
@@ -17,7 +17,7 @@ import {
   relatedArticlesQuery,
 } from "@/lib/sanity/queries";
 import type { Article, ArticlePreview } from "@/lib/sanity/types";
-import { absoluteUrl, authorName, siteName } from "@/lib/site";
+import { absoluteUrl, siteName } from "@/lib/site";
 
 /**
  * Prerender every published essay at build time; essays published after the
@@ -99,8 +99,8 @@ export default async function EssayPage({
           datePublished: article.publishedAt,
           image: [absoluteUrl(`/essays/${slug}/opengraph-image`)],
           author: {
-            "@type": "Person",
-            name: article.author?.name ?? authorName,
+            "@type": "Organization",
+            name: siteName,
             url: absoluteUrl("/"),
           },
           publisher: { "@type": "Organization", name: siteName },
@@ -129,9 +129,6 @@ export default async function EssayPage({
             {minutes} min read
           </p>
           <h1 className="display mt-6">{article.title}</h1>
-          {article.author && (
-            <p className="eyebrow mt-7">By {article.author.name}</p>
-          )}
         </header>
 
         <Ornament className="mx-auto mt-12 max-w-xs sm:mt-14" />
@@ -156,26 +153,11 @@ export default async function EssayPage({
 
         <Ornament className="mx-auto mt-16 max-w-xs" />
 
-        {/* The author's sign-off. */}
-        <footer className="mx-auto mt-14 max-w-2xl">
-          <div className="flex flex-col items-center gap-5 text-center sm:flex-row sm:items-start sm:gap-7 sm:text-left">
-            <AuthorMark />
-            <div>
-              <p className="eyebrow">Written by</p>
-              <p className="mt-2 font-serif text-xl tracking-tight sm:text-[1.35rem]">
-                {article.author?.name ?? authorName}
-              </p>
-              <p className="mt-3 max-w-prose text-[0.98em] leading-relaxed text-ink-muted">
-                {article.author?.bio ??
-                  "Writing about the life of faith from the middle of it — essays on scripture, doubt, hope, and grace."}
-              </p>
-              <p className="mt-3">
-                <Link href="/about" className="link font-sans text-sm">
-                  About WritingFaith
-                </Link>
-              </p>
-            </div>
-          </div>
+        {/* The essay's sign-off: no byline — the writing stands on its own. */}
+        <footer className="mx-auto mt-14 max-w-2xl text-center">
+          <Link href="/about" className="link font-sans text-sm">
+            About {siteName}
+          </Link>
         </footer>
       </article>
 

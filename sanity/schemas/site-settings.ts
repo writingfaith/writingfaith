@@ -16,8 +16,11 @@ export const siteSettingsType = defineType({
     { name: "identity", title: "Identity & menu", default: true },
     { name: "design", title: "Design" },
     { name: "home", title: "Home page" },
+    { name: "essays", title: "Essays page" },
+    { name: "about", title: "About page" },
+    { name: "search", title: "Search page" },
     { name: "newsletter", title: "Newsletter" },
-    { name: "archive", title: "Archive & footer" },
+    { name: "footer", title: "Footer" },
   ],
   fields: [
     defineField({
@@ -76,13 +79,6 @@ export const siteSettingsType = defineType({
         "One or two sentences describing the site. Used as a fallback description and on the About placeholder.",
     }),
     defineField({
-      name: "authorName",
-      title: "Author name",
-      type: "string",
-      group: "identity",
-      initialValue: "Veruschka Pestano",
-    }),
-    defineField({
       name: "postLabelSingular",
       title: "Menu & labels: one piece of writing is called…",
       type: "string",
@@ -138,7 +134,7 @@ export const siteSettingsType = defineType({
       rows: 3,
       group: "home",
       initialValue:
-        "Long-form writing on Christian faith — scripture, prayer, doubt, and hope — by Veruschka Pestano. Free to read, with every new essay delivered by email to subscribers.",
+        "Long-form writing on Christian faith — scripture, prayer, doubt, and hope. Free to read, with every new essay delivered by email to subscribers.",
     }),
     defineField({
       name: "topicsHeading",
@@ -214,7 +210,7 @@ export const siteSettingsType = defineType({
       rows: 4,
       group: "home",
       initialValue:
-        "Veruschka Pestano writes about the life of faith from the middle of it — not from above it. This writing is one reader’s slow walk through scripture, doubt, and grace, offered in the hope that it keeps you company on yours.",
+        "This writing comes from the middle of the life of faith — not from above it. It is one reader’s slow walk through scripture, doubt, and grace, offered in the hope that it keeps you company on yours.",
     }),
 
     defineField({
@@ -238,7 +234,7 @@ export const siteSettingsType = defineType({
       name: "archiveEyebrow",
       title: "Archive eyebrow",
       type: "string",
-      group: "archive",
+      group: "essays",
       initialValue: "The archive",
       description: "The small label at the top of the writing archive.",
     }),
@@ -246,17 +242,136 @@ export const siteSettingsType = defineType({
       name: "archiveHeading",
       title: "Archive headline",
       type: "string",
-      group: "archive",
+      group: "essays",
       initialValue: "Writing on scripture, doubt, hope, and grace.",
     }),
+    defineField({
+      name: "essaysEmptyHeading",
+      title: "Empty archive: headline",
+      type: "string",
+      group: "essays",
+      initialValue: "The first essay is being written.",
+      description:
+        "Shown on the Essays page only while nothing has been published yet.",
+    }),
+    defineField({
+      name: "essaysEmptyText",
+      title: "Empty archive: sentence before the link",
+      type: "text",
+      rows: 2,
+      group: "essays",
+      initialValue: "Nothing has been published yet.",
+    }),
+    defineField({
+      name: "essaysEmptyLinkLabel",
+      title: "Empty archive: link text",
+      type: "string",
+      group: "essays",
+      initialValue: "Subscribe",
+      description: "The linked words. The link points at the newsletter page.",
+    }),
+    defineField({
+      name: "essaysEmptyLinkSuffix",
+      title: "Empty archive: sentence after the link",
+      type: "string",
+      group: "essays",
+      initialValue: "to be notified the moment it arrives.",
+    }),
+
+    defineField({
+      name: "aboutEyebrow",
+      title: "About eyebrow",
+      type: "string",
+      group: "about",
+      initialValue: "About",
+      description:
+        "The small label above the About headline, on the page itself.",
+    }),
+    defineField({
+      name: "aboutPlaceholderTitle",
+      title: "Placeholder headline",
+      type: "string",
+      group: "about",
+      description:
+        "Shown only until an About page exists under Pages. Empty falls back to the site name.",
+    }),
+    defineField({
+      name: "aboutPlaceholderText",
+      title: "Placeholder introduction",
+      type: "text",
+      rows: 3,
+      group: "about",
+      description:
+        "Shown only until an About page exists under Pages. Empty falls back to the tagline.",
+    }),
+
+    defineField({
+      name: "searchHeading",
+      title: "Search heading",
+      type: "string",
+      group: "search",
+      initialValue: "Search",
+      description: "The label at the top of the Search page.",
+    }),
+    defineField({
+      name: "searchDescription",
+      title: "Search page description",
+      type: "text",
+      rows: 2,
+      group: "search",
+      initialValue: "Search the essays on WritingFaith.",
+      description: "Used by browsers and search engines, not shown on the page.",
+    }),
+    defineField({
+      name: "searchInputLabel",
+      title: "Search box label",
+      type: "string",
+      group: "search",
+      initialValue: "Search essays by word or phrase",
+    }),
+    defineField({
+      name: "searchPlaceholder",
+      title: "Search box placeholder",
+      type: "string",
+      group: "search",
+      initialValue: "hope, psalms, doubt…",
+      description: "The faint example text inside the empty search box.",
+    }),
+    defineField({
+      name: "searchButtonLabel",
+      title: "Search button",
+      type: "string",
+      group: "search",
+      initialValue: "Search",
+    }),
+    defineField({
+      name: "searchNoResultsText",
+      title: "No results: sentence before the link",
+      type: "text",
+      rows: 2,
+      group: "search",
+      initialValue:
+        "No essays matched “{query}”. Try a different word, or browse",
+      description:
+        "Write {query} where the reader's search term should appear. The sentence ends with the link below.",
+    }),
+    defineField({
+      name: "searchBrowseAllLabel",
+      title: "No results: link text",
+      type: "string",
+      group: "search",
+      initialValue: "all essays",
+      description: "The linked words. The link points at the Essays page.",
+    }),
+
     defineField({
       name: "footerBlurb",
       title: "Footer blurb",
       type: "text",
       rows: 3,
-      group: "archive",
+      group: "footer",
       initialValue:
-        "Independent writing on Christian faith by Veruschka Pestano — scripture, doubt, hope, and grace, explored with honesty and care.",
+        "Independent writing on Christian faith — scripture, doubt, hope, and grace, explored with honesty and care.",
     }),
   ],
   preview: {

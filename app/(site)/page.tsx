@@ -3,7 +3,7 @@ import Link from "next/link";
 import { EssayList, FeaturedEssay } from "@/components/essay-list";
 import { JsonLd } from "@/components/json-ld";
 import { NewsletterForm } from "@/components/newsletter-form";
-import { AuthorMark, OliveBranch, Ornament } from "@/components/ornaments";
+import { OliveBranch, Ornament, SiteMark } from "@/components/ornaments";
 import { contentTags, sanityFetch } from "@/lib/sanity/fetch";
 import { latestArticlesQuery } from "@/lib/sanity/queries";
 import type { ArticlePreview } from "@/lib/sanity/types";
@@ -34,9 +34,9 @@ export default async function HomePage() {
               url: siteUrl,
             },
             {
-              "@type": "Person",
-              "@id": `${siteUrl}/#author`,
-              name: settings.authorName,
+              "@type": "Organization",
+              "@id": `${siteUrl}/#publisher`,
+              name: settings.siteName,
               url: siteUrl,
               mainEntityOfPage: absoluteUrl("/"),
             },
@@ -147,7 +147,7 @@ export default async function HomePage() {
           className="reveal-scroll border-t border-rule py-14 sm:py-16"
         >
           <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:gap-8">
-            <AuthorMark />
+            <SiteMark />
             <div>
               <h2 id="author-heading" className="eyebrow">
                 The writer

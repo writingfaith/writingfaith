@@ -4,7 +4,7 @@ import type { PortableTextBlock } from "@portabletext/react";
 import { imageDimensions, imageUrl } from "@/lib/sanity/image";
 import type { Article, SanityImage } from "@/lib/sanity/types";
 import { safeContentHref } from "@/lib/security/url";
-import { absoluteUrl, authorName, siteDescription, siteName, siteUrl } from "@/lib/site";
+import { absoluteUrl, siteDescription, siteName, siteUrl } from "@/lib/site";
 
 /** Escape a string for use in XML text nodes and attributes. */
 function xml(value: string): string {
@@ -63,7 +63,7 @@ export function buildFeed(articles: Article[]): string {
       <guid isPermaLink="true">${xml(url)}</guid>
       <pubDate>${new Date(article.publishedAt).toUTCString()}</pubDate>
       <description>${xml(article.excerpt)}</description>
-      <dc:creator>${xml(article.author?.name ?? authorName)}</dc:creator>
+      <dc:creator>${xml(siteName)}</dc:creator>
       <content:encoded><![CDATA[${html.replaceAll("]]>", "]]]]><![CDATA[>")}]]></content:encoded>
       ${article.categories.map((c) => `<category>${xml(c.title)}</category>`).join("\n      ")}
     </item>`;

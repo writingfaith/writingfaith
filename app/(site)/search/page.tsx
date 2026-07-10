@@ -7,14 +7,18 @@ import { EssayList } from "@/components/essay-list";
 import { client } from "@/lib/sanity/client";
 import { searchArticlesQuery } from "@/lib/sanity/queries";
 import type { ArticlePreview } from "@/lib/sanity/types";
+import { getSiteSettings, type SiteSettings } from "@/lib/site-settings";
 import { normalizeSearchQuery } from "@/lib/validate";
 
-export const metadata: Metadata = {
-  title: "Search",
-  description: "Search the essays on WritingFaith.",
-  alternates: { canonical: "/search" },
-  robots: { index: false }, // result pages are query-dependent; keep them out of the index
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings();
+  return {
+    title: settings.searchLabel,
+    description: settings.searchDescription,
+    alternates: { canonical: "/search" },
+    robots: { index: false }, // result pages are query-dependent; keep them out of the index
+  };
+}
 
 /**
  * Launch-tier search (ADR 0001 §Additions): a cached GROQ full-text query,
@@ -27,14 +31,20 @@ async function searchArticles(q: string): Promise<ArticlePreview[]> {
   return client.fetch<ArticlePreview[]>(searchArticlesQuery, { q: `${q}*` });
 }
 
-function SearchForm({ initialQuery }: { initialQuery?: string }) {
+function SearchForm({
+  settings,
+  initialQuery,
+}: {
+  settings: SiteSettings;
+  initialQuery?: string;
+}) {
   return (
     <form action="/search" method="get" role="search" className="mt-8">
       <label
         htmlFor="search-input"
         className="block font-sans text-sm text-ink-muted"
       >
-        Search essays by word or phrase
+        {settings.searchInputLabel}
       </label>
       <div className="mt-3 flex max-w-xl flex-col gap-3 sm:flex-row">
         <input
@@ -44,13 +54,13 @@ function SearchForm({ initialQuery }: { initialQuery?: string }) {
           defaultValue={initialQuery}
           autoComplete="off"
           className="field"
-          placeholder="hope, psalms, doubt…"
+          placeholder={settings.searchPlaceholder}
         />
         <button
           type="submit"
           className="btn w-full shrink-0 sm:w-auto"
         >
-          Search
+          {settings.searchButtonLabel}
         </button>
       </div>
     </form>
@@ -58,8 +68,10 @@ function SearchForm({ initialQuery }: { initialQuery?: string }) {
 }
 
 async function SearchContent({
+  settings,
   searchParams,
 }: {
+  settings: SiteSettings;
   searchParams: Promise<{ q?: string | string[] }>;
 }) {
   const params = await searchParams;
@@ -69,16 +81,17 @@ async function SearchContent({
 
   return (
     <>
-      <SearchForm initialQuery={query} />
+      <SearchForm settings={settings} initialQuery={query} />
       <div aria-live="polite">
         {results !== null &&
           (results.length > 0 ? (
             <>
               <p className="mt-10 font-sans text-sm text-ink-faint">
+                {results.length}{" "}
                 {results.length === 1
-                  ? "1 essay found"
-                  : `${results.length} essays found`}{" "}
-                for “{query}”
+                  ? settings.postSingular
+                  : settings.postPlural}{" "}
+                found for “{query}”
               </p>
               <div className="border-t border-rule">
                 <EssayList essays={results} />
@@ -86,12 +99,12 @@ async function SearchContent({
             </>
           ) : (
             <p className="mt-10 max-w-prose text-ink-muted">
-              No essays matched “{query}”. Try a different word, or browse{" "}
+              {settings.searchNoResultsText.replaceAll("{query}", query ?? "")}{" "}
               <Link
                 href="/essays"
                 className="text-accent-strong underline underline-offset-4"
               >
-                all essays
+                {settings.searchBrowseAllLabel}
               </Link>
               .
             </p>
@@ -101,21 +114,21 @@ async function SearchContent({
   );
 }
 
-export default function SearchPage({
+export default async function SearchPage({
   searchParams,
 }: {
   searchParams: Promise<{ q?: string | string[] }>;
 }) {
+  const settings = await getSiteSettings();
+
   return (
     <div className="mx-auto max-w-4xl px-6">
       <section className="py-16 sm:py-20">
-        <h1 className="eyebrow">
-          Search
-        </h1>
+        <h1 className="eyebrow">{settings.searchHeading}</h1>
         {/* searchParams is runtime data under Cache Components, so
             everything that reads it streams inside Suspense. */}
-        <Suspense fallback={<SearchForm />}>
-          <SearchContent searchParams={searchParams} />
+        <Suspense fallback={<SearchForm settings={settings} />}>
+          <SearchContent settings={settings} searchParams={searchParams} />
         </Suspense>
       </section>
     </div>

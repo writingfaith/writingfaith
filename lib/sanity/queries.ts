@@ -139,7 +139,6 @@ export const siteSettingsQuery = groq`
     tagline,
     fontTheme,
     accentTheme,
-    authorName,
     postLabelSingular,
     postLabelPlural,
     aboutLabel,
@@ -156,6 +155,20 @@ export const siteSettingsQuery = groq`
     newsletterText,
     archiveEyebrow,
     archiveHeading,
+    essaysEmptyHeading,
+    essaysEmptyText,
+    essaysEmptyLinkLabel,
+    essaysEmptyLinkSuffix,
+    aboutEyebrow,
+    aboutPlaceholderTitle,
+    aboutPlaceholderText,
+    searchHeading,
+    searchDescription,
+    searchInputLabel,
+    searchPlaceholder,
+    searchButtonLabel,
+    searchNoResultsText,
+    searchBrowseAllLabel,
     footerBlurb
   }
 `;

@@ -33,10 +33,6 @@ export default async function Image({
   return brandImage({
     eyebrow: "An essay on faith",
     title: article?.title ?? "WritingFaith",
-    detail: article
-      ? [article.author, formatDate(article.publishedAt)]
-          .filter(Boolean)
-          .join(" · ")
-      : undefined,
+    detail: article ? formatDate(article.publishedAt) : undefined,
   });
 }

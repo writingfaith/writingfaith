@@ -20,8 +20,8 @@ export async function generateMetadata(): Promise<Metadata> {
   const [page, settings] = await Promise.all([getAboutPage(), getSiteSettings()]);
 
   return {
-    title: page?.title ?? "About",
-    description: page?.description ?? settings.tagline,
+    title: page?.title ?? settings.aboutLabel,
+    description: page?.description ?? settings.aboutPlaceholderText,
     alternates: { canonical: "/about" },
   };
 }
@@ -37,15 +37,18 @@ export default async function AboutPage() {
 
   if (page) {
     return (
-      <ProsePage eyebrow="About" title={page.title}>
+      <ProsePage eyebrow={settings.aboutEyebrow} title={page.title}>
         <EssayBody value={page.body} />
       </ProsePage>
     );
   }
 
   return (
-    <ProsePage eyebrow="About" title={settings.siteName}>
-      <p>{settings.tagline}</p>
+    <ProsePage
+      eyebrow={settings.aboutEyebrow}
+      title={settings.aboutPlaceholderTitle}
+    >
+      <p>{settings.aboutPlaceholderText}</p>
       <p>
         This page is written from the Studio: create a page with the slug{" "}
         <strong>about</strong> under Pages, and whatever is written there

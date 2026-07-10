@@ -23,8 +23,8 @@ export default function TermsPage() {
 
       <h2>Copyright</h2>
       <p>
-        All essays and original content on this site are © Veruschka Pestano,
-        all rights reserved. You’re warmly encouraged to share links, quote
+        All essays and original content on this site are © WritingFaith, all
+        rights reserved. You’re warmly encouraged to share links, quote
         brief excerpts with attribution, and read aloud to whomever will
         listen. Republishing whole essays, commercially reusing content, or
         training AI systems on it requires written permission — please{" "}

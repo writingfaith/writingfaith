@@ -1,6 +1,5 @@
 import { ImageResponse } from "next/og";
 
-import { authorName } from "@/lib/site";
 
 export const OG_SIZE = { width: 1200, height: 630 };
 
@@ -88,9 +87,11 @@ export async function brandImage({
           <div style={{ display: "flex", fontSize: 34 }}>
             Writing<span style={{ color: "#8a5a2b", fontStyle: "italic" }}>Faith</span>
           </div>
-          <div style={{ display: "flex", fontSize: 26, color: "#5d554a" }}>
-            {detail ?? authorName}
-          </div>
+          {detail ? (
+            <div style={{ display: "flex", fontSize: 26, color: "#5d554a" }}>
+              {detail}
+            </div>
+          ) : null}
         </div>
       </div>
     ),

@@ -8,12 +8,10 @@ export const siteUrl = (
 
 export const siteName = "WritingFaith";
 
-export const siteTitle = "WritingFaith — Essays on faith by Veruschka Pestano";
+export const siteTitle = "WritingFaith — Essays on faith";
 
 export const siteDescription =
-  "Thoughtful long-form essays on Christian faith, hope, and everyday life, written by Veruschka Pestano.";
-
-export const authorName = "Veruschka Pestano";
+  "Thoughtful long-form essays on Christian faith, hope, and everyday life.";
 
 /** Absolute URL for a site path. */
 export function absoluteUrl(path: string): string {

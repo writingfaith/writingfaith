@@ -31,7 +31,6 @@ const siteSettings = {
   accentTheme: "bronze",
   tagline:
     "Thoughtful long-form writing on Christian faith, hope, and everyday life.",
-  authorName: "Veruschka Pestano",
   postLabelSingular: "essay",
   postLabelPlural: "essays",
   aboutLabel: "About",
@@ -39,7 +38,7 @@ const siteSettings = {
   heroEyebrow: "Essays on faith",
   heroHeading: "Quiet reflections on following Christ in an unquiet world.",
   heroIntro:
-    "Long-form writing on Christian faith — scripture, prayer, doubt, and hope — by Veruschka Pestano. Free to read, with every new essay delivered by email to subscribers.",
+    "Long-form writing on Christian faith — scripture, prayer, doubt, and hope. Free to read, with every new essay delivered by email to subscribers.",
   topicsHeading: "What you’ll find here",
   topics: [
     {
@@ -64,14 +63,30 @@ const siteSettings = {
   scriptureQuote: "Be still, and know that I am God.",
   scriptureReference: "Psalm 46:10",
   writerBio:
-    "Veruschka Pestano writes about the life of faith from the middle of it — not from above it. This writing is one reader’s slow walk through scripture, doubt, and grace, offered in the hope that it keeps you company on yours.",
+    "This writing comes from the middle of the life of faith — not from above it. It is one reader’s slow walk through scripture, doubt, and grace, offered in the hope that it keeps you company on yours.",
   newsletterHeading: "Never miss a word",
   newsletterText:
     "Subscribe to be notified whenever a new essay is published — one considered email, nothing else. Free, no spam, and every email ends with a one-click unsubscribe.",
   archiveEyebrow: "The archive",
   archiveHeading: "Writing on scripture, doubt, hope, and grace.",
+  essaysEmptyHeading: "The first essay is being written.",
+  essaysEmptyText: "Nothing has been published yet.",
+  essaysEmptyLinkLabel: "Subscribe",
+  essaysEmptyLinkSuffix: "to be notified the moment it arrives.",
+  aboutEyebrow: "About",
+  aboutPlaceholderTitle: "WritingFaith",
+  aboutPlaceholderText:
+    "Thoughtful long-form writing on Christian faith, hope, and everyday life.",
+  searchHeading: "Search",
+  searchDescription: "Search the essays on WritingFaith.",
+  searchInputLabel: "Search essays by word or phrase",
+  searchPlaceholder: "hope, psalms, doubt…",
+  searchButtonLabel: "Search",
+  searchNoResultsText:
+    "No essays matched “{query}”. Try a different word, or browse",
+  searchBrowseAllLabel: "all essays",
   footerBlurb:
-    "Independent writing on Christian faith by Veruschka Pestano — scripture, doubt, hope, and grace, explored with honesty and care.",
+    "Independent writing on Christian faith — scripture, doubt, hope, and grace, explored with honesty and care.",
 };
 
 /** A paragraph block for the About page's starting content. */

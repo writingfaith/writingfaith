@@ -44,8 +44,8 @@ content freshness comes from dev-mode rendering instead.
 
 Open `/studio`, sign in with the project's Sanity account, and create:
 
-1. An **Author** document (Veruschka Pestano).
-2. A first **Essay** referencing that author.
+1. An **Author** document (optional — the site no longer renders bylines).
+2. A first **Essay**.
 
 Drafts can be previewed live via the Studio's **Presentation** tab
 (requires `SANITY_API_READ_TOKEN`).

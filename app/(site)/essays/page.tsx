@@ -69,15 +69,13 @@ export default async function EssaysPage() {
           </div>
         ) : (
           <div className="plate mx-auto mt-12 max-w-xl px-6 py-12 text-center">
-            <p className="font-serif text-xl">
-              The first {settings.postSingular} is being written.
-            </p>
+            <p className="font-serif text-xl">{settings.essaysEmptyHeading}</p>
             <p className="mx-auto mt-3 max-w-[40ch] leading-relaxed text-ink-muted">
-              Nothing has been published yet.{" "}
+              {settings.essaysEmptyText}{" "}
               <Link href="/feed" className="link">
-                Subscribe
+                {settings.essaysEmptyLinkLabel}
               </Link>{" "}
-              to be notified the moment it arrives.
+              {settings.essaysEmptyLinkSuffix}
             </p>
           </div>
         )}

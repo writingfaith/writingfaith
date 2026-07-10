@@ -1,14 +1,21 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { ProsePage } from "@/components/prose-page";
 
 export const metadata: Metadata = {
   title: "Contact",
-  description: "How to reach Veruschka Pestano, the author of WritingFaith.",
+  description: "How to reach the writer behind WritingFaith.",
   alternates: { canonical: "/contact" },
 };
 
-const contactEmail = "veruschkapestano@gmail.com";
+/**
+ * The public contact address. Deliberately has no fallback: a personal address
+ * hardcoded here would sit in the page source inside the `mailto:` href, name
+ * and all, however the link is labelled. Set NEXT_PUBLIC_CONTACT_EMAIL to a
+ * neutral alias to switch the link on.
+ */
+const contactEmail = process.env.NEXT_PUBLIC_CONTACT_EMAIL?.trim();
 
 export default function ContactPage() {
   return (
@@ -24,13 +31,23 @@ export default function ContactPage() {
         Whether an essay helped you, you disagree and want to say why, you’ve
         spotted a mistake, or you simply want to say hello — write any time:
       </p>
-      <p>
-        <a href={`mailto:${contactEmail}`}>{contactEmail}</a>
-      </p>
-      <p>
-        Every message is read, though with writing and life alongside, replies
-        can take a little while. Thank you for your patience.
-      </p>
+      {contactEmail ? (
+        <>
+          <p>
+            <a href={`mailto:${contactEmail}`}>Send a message</a>
+          </p>
+          <p>
+            Every message is read, though with writing and life alongside,
+            replies can take a little while. Thank you for your patience.
+          </p>
+        </>
+      ) : (
+        <p>
+          A public address is being set up. In the meantime, the{" "}
+          <Link href="/feed">newsletter</Link> is the surest way to keep in
+          touch — every email can be replied to.
+        </p>
+      )}
       <h2>A note on pastoral matters</h2>
       <p>
         Emails sometimes arrive carrying heavy things. Please know that while

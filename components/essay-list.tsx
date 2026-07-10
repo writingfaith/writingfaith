@@ -88,12 +88,6 @@ export function FeaturedEssay({
       </p>
       <p className="eyebrow mt-6">
         <time dateTime={essay.publishedAt}>{formatDate(essay.publishedAt)}</time>
-        {essay.author ? (
-          <span>
-            <span aria-hidden="true"> · </span>
-            {essay.author.name}
-          </span>
-        ) : null}
       </p>
     </article>
   );

@@ -5,7 +5,7 @@ import {
 } from "@/lib/sanity/fetch";
 import { siteSettingsQuery } from "@/lib/sanity/queries";
 import type { SiteSettingsDoc } from "@/lib/sanity/types";
-import { authorName, siteDescription, siteName } from "@/lib/site";
+import { siteDescription, siteName } from "@/lib/site";
 
 export interface Topic {
   title: string;
@@ -31,7 +31,6 @@ export interface SiteSettings {
   fontTheme: FontTheme;
   accentTheme: AccentTheme;
   tagline: string;
-  authorName: string;
   /** Lowercase noun for one piece of writing, e.g. "essay". */
   postSingular: string;
   /** Lowercase collective noun, e.g. "essays" or "blog". */
@@ -52,6 +51,21 @@ export interface SiteSettings {
   newsletterText: string;
   archiveEyebrow: string;
   archiveHeading?: string;
+  essaysEmptyHeading: string;
+  essaysEmptyText: string;
+  essaysEmptyLinkLabel: string;
+  essaysEmptyLinkSuffix: string;
+  aboutEyebrow: string;
+  aboutPlaceholderTitle: string;
+  aboutPlaceholderText: string;
+  searchHeading: string;
+  searchDescription: string;
+  searchInputLabel: string;
+  searchPlaceholder: string;
+  searchButtonLabel: string;
+  /** Contains a literal `{query}` token, replaced with the reader's term. */
+  searchNoResultsText: string;
+  searchBrowseAllLabel: string;
   footerBlurb: string;
 }
 
@@ -126,7 +140,10 @@ export async function getSiteSettings(): Promise<SiteSettings> {
 
   const postSingular = words(doc?.postLabelSingular, "essay").toLowerCase();
   const postPlural = words(doc?.postLabelPlural, "essays").toLowerCase();
-  const resolvedAuthor = words(doc?.authorName, authorName);
+  const resolvedSiteName = words(doc?.siteName, siteName);
+  const resolvedTagline = words(doc?.tagline, siteDescription);
+  const aboutLabel = words(doc?.aboutLabel, "About");
+  const searchLabel = words(doc?.searchLabel, "Search");
 
   const topics: Topic[] =
     doc?.topics
@@ -137,21 +154,20 @@ export async function getSiteSettings(): Promise<SiteSettings> {
       .filter((topic) => topic.title && topic.text) ?? [];
 
   return {
-    siteName: words(doc?.siteName, siteName),
+    siteName: resolvedSiteName,
     fontTheme: resolveFont(doc?.fontTheme),
     accentTheme: resolveAccent(doc?.accentTheme),
-    tagline: words(doc?.tagline, siteDescription),
-    authorName: resolvedAuthor,
+    tagline: resolvedTagline,
     postSingular,
     postPlural,
     postPluralTitle: titleCase(postPlural),
-    aboutLabel: words(doc?.aboutLabel, "About"),
-    searchLabel: words(doc?.searchLabel, "Search"),
+    aboutLabel,
+    searchLabel,
     heroEyebrow: words(doc?.heroEyebrow, `${titleCase(postPlural)} on faith`),
     heroHeading: doc?.heroHeading?.trim() || undefined,
     heroIntro: words(
       doc?.heroIntro,
-      `Long-form writing on Christian faith — scripture, prayer, doubt, and hope — by ${resolvedAuthor}. Free to read, with every new ${postSingular} delivered by email to subscribers.`,
+      `Long-form writing on Christian faith — scripture, prayer, doubt, and hope. Free to read, with every new ${postSingular} delivered by email to subscribers.`,
     ),
     topicsHeading: words(doc?.topicsHeading, "What you’ll find here"),
     topics: topics.length > 0 ? topics : defaultTopics,
@@ -162,7 +178,7 @@ export async function getSiteSettings(): Promise<SiteSettings> {
     scriptureReference: words(doc?.scriptureReference, "Psalm 46:10"),
     writerBio: words(
       doc?.writerBio,
-      `${resolvedAuthor} writes about the life of faith from the middle of it — not from above it. This writing is one reader’s slow walk through scripture, doubt, and grace, offered in the hope that it keeps you company on yours.`,
+      `This writing comes from the middle of the life of faith — not from above it. It is one reader’s slow walk through scripture, doubt, and grace, offered in the hope that it keeps you company on yours.`,
     ),
     newsletterHeading: words(doc?.newsletterHeading, "Never miss a word"),
     newsletterText: words(
@@ -171,9 +187,44 @@ export async function getSiteSettings(): Promise<SiteSettings> {
     ),
     archiveEyebrow: words(doc?.archiveEyebrow, "The archive"),
     archiveHeading: doc?.archiveHeading?.trim() || undefined,
+    essaysEmptyHeading: words(
+      doc?.essaysEmptyHeading,
+      `The first ${postSingular} is being written.`,
+    ),
+    essaysEmptyText: words(
+      doc?.essaysEmptyText,
+      "Nothing has been published yet.",
+    ),
+    essaysEmptyLinkLabel: words(doc?.essaysEmptyLinkLabel, "Subscribe"),
+    essaysEmptyLinkSuffix: words(
+      doc?.essaysEmptyLinkSuffix,
+      "to be notified the moment it arrives.",
+    ),
+    aboutEyebrow: words(doc?.aboutEyebrow, aboutLabel),
+    aboutPlaceholderTitle: words(doc?.aboutPlaceholderTitle, resolvedSiteName),
+    aboutPlaceholderText: words(doc?.aboutPlaceholderText, resolvedTagline),
+    searchHeading: words(doc?.searchHeading, searchLabel),
+    searchDescription: words(
+      doc?.searchDescription,
+      `Search the ${postPlural} on ${resolvedSiteName}.`,
+    ),
+    searchInputLabel: words(
+      doc?.searchInputLabel,
+      `Search ${postPlural} by word or phrase`,
+    ),
+    searchPlaceholder: words(doc?.searchPlaceholder, "hope, psalms, doubt…"),
+    searchButtonLabel: words(doc?.searchButtonLabel, "Search"),
+    searchNoResultsText: words(
+      doc?.searchNoResultsText,
+      `No ${postPlural} matched “{query}”. Try a different word, or browse`,
+    ),
+    searchBrowseAllLabel: words(
+      doc?.searchBrowseAllLabel,
+      `all ${postPlural}`,
+    ),
     footerBlurb: words(
       doc?.footerBlurb,
-      `Independent writing on Christian faith by ${resolvedAuthor} — scripture, doubt, hope, and grace, explored with honesty and care.`,
+      `Independent writing on Christian faith — scripture, doubt, hope, and grace, explored with honesty and care.`,
     ),
   };
 }

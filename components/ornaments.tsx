@@ -1,7 +1,7 @@
 /**
  * The publication's crafted details. One recurring mark (the bronze
  * diamond between hairlines), a fine-line olive branch for the newsletter
- * invitation, and the author's monogram roundel. All inline SVG/CSS —
+ * invitation, and the publication's monogram roundel. All inline SVG/CSS —
  * no image requests, no layout shift, themed by currentColor/tokens.
  */
 
@@ -62,14 +62,14 @@ export function OliveBranch({ className = "" }: { className?: string }) {
   );
 }
 
-/** The author's monogram in a hairline roundel. */
-export function AuthorMark({ className = "" }: { className?: string }) {
+/** The publication's monogram in a hairline roundel. */
+export function SiteMark({ className = "" }: { className?: string }) {
   return (
     <span
       aria-hidden="true"
       className={`inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-rule-strong font-serif text-lg italic tracking-tight text-accent-strong ${className}`}
     >
-      VP
+      WF
     </span>
   );
 }

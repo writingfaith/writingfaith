@@ -2,7 +2,7 @@ import Link from "next/link";
 import { connection } from "next/server";
 import { Suspense } from "react";
 
-import { getOwnerAccess, ownerEmail } from "@/lib/auth/owner";
+import { getOwnerAccess } from "@/lib/auth/owner";
 import { Studio } from "./studio";
 
 // Sensible Studio defaults from next-sanity: noindex, same-origin referrer,
@@ -35,9 +35,9 @@ async function StudioGate() {
     return (
       <StudioAccessMessage title="Sign in to edit WritingFaith.">
         <p>
-          Only Veruschka Pestano can open the publication editor. Sign in with{" "}
-          <span className="font-semibold text-ink">{ownerEmail}</span> to
-          manage essays, pages, authors, and categories.
+          Only the site owner can open the publication editor. Sign in with the
+          owner’s email address to manage essays, pages, authors, and
+          categories.
         </p>
         <Link href="/signin?redirectTo=/studio" className="btn btn-primary mt-8">
           Sign in
@@ -50,8 +50,7 @@ async function StudioGate() {
     return (
       <StudioAccessMessage title="This account cannot edit the site.">
         <p>
-          You are signed in, but this Studio is reserved for{" "}
-          <span className="font-semibold text-ink">{ownerEmail}</span>.
+          You are signed in, but this Studio is reserved for the site owner.
         </p>
       </StudioAccessMessage>
     );

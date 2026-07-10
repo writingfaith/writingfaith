@@ -2,7 +2,7 @@
 
 - **Status:** **Accepted — architecture frozen** (after independent review, see §Review below)
 - **Date:** 2026-07-07
-- **Deciders:** Veruschka Pestano (owner), Claude (engineering)
+- **Deciders:** Site owner, Claude (engineering)
 
 ## Context
 

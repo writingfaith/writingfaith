@@ -65,7 +65,6 @@ export interface SiteSettingsDoc {
   fontTheme?: string;
   accentTheme?: string;
   tagline?: string;
-  authorName?: string;
   postLabelSingular?: string;
   postLabelPlural?: string;
   aboutLabel?: string;
@@ -82,5 +81,19 @@ export interface SiteSettingsDoc {
   newsletterText?: string;
   archiveEyebrow?: string;
   archiveHeading?: string;
+  essaysEmptyHeading?: string;
+  essaysEmptyText?: string;
+  essaysEmptyLinkLabel?: string;
+  essaysEmptyLinkSuffix?: string;
+  aboutEyebrow?: string;
+  aboutPlaceholderTitle?: string;
+  aboutPlaceholderText?: string;
+  searchHeading?: string;
+  searchDescription?: string;
+  searchInputLabel?: string;
+  searchPlaceholder?: string;
+  searchButtonLabel?: string;
+  searchNoResultsText?: string;
+  searchBrowseAllLabel?: string;
   footerBlurb?: string;
 }

@@ -42,7 +42,7 @@ export async function generateMetadata({
     title: `${category.title} — Essays`,
     description:
       category.description ??
-      `Essays on ${category.title.toLowerCase()} by Veruschka Pestano.`,
+      `Essays on ${category.title.toLowerCase()}.`,
     alternates: { canonical: `/essays/category/${slug}` },
   };
 }
