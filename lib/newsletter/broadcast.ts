@@ -44,6 +44,7 @@ export async function notifyNewEssay(essay: EssayForNotification): Promise<void>
     });
     const resend = getResend();
     const { error } = await resend.broadcasts.create({
+      name: subject,
       segmentId,
       from: emailFrom,
       subject,
