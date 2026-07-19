@@ -33,7 +33,7 @@ export async function SiteFooter() {
     { href: "/about", label: settings.aboutLabel },
     { href: "/contact", label: "Contact" },
     { href: "/feed", label: "Newsletter" },
-    { href: "/account", label: "Account" },
+    { href: "/account", label: "Sign Up" },
   ];
 
   return (

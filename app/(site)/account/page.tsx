@@ -9,7 +9,7 @@ import { getNewsletterAccountState } from "@/lib/newsletter/account";
 import { normalizeEmail } from "@/lib/validate";
 
 export const metadata: Metadata = {
-  title: "Your account",
+  title: "Sign Up",
   description: "Manage your WritingFaith reader account and essay emails.",
   robots: { index: false },
 };

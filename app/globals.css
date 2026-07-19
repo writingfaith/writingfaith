@@ -446,9 +446,9 @@ body {
   pointer-events: none;
 }
 
-/* A second, softer pool of light inside the hero. It breathes on its own
-   (weather, not neon) and, on fine-pointer devices, HeroLight leans it
-   gently toward the reader's hand — transform and opacity only. */
+/* A second, softer pool of light inside the hero. On fine-pointer devices,
+   HeroLight leans it gently toward the reader's hand with one compositor
+   transform per display frame. */
 .hero-glow {
   position: absolute;
   inset: -18%;
@@ -459,17 +459,7 @@ body {
     color-mix(in oklab, var(--accent) 5%, transparent),
     transparent 70%
   );
-  animation: glow-breathe 9s ease-in-out infinite alternate;
   will-change: transform;
-}
-
-@keyframes glow-breathe {
-  from {
-    opacity: 0.7;
-  }
-  to {
-    opacity: 1;
-  }
 }
 
 @media (prefers-color-scheme: dark) {
@@ -479,13 +469,6 @@ body {
       color-mix(in oklab, var(--accent) 10%, transparent),
       transparent 72%
     );
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .hero-glow {
-    animation: none;
-    opacity: 1;
   }
 }
 
@@ -704,43 +687,39 @@ article figure img {
   animation: rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.14s both;
 }
 
-.reveal-1 { animation: hero-kicker 0.48s var(--ease-out) both; }
-.reveal-2 { animation: hero-title 0.76s var(--ease-settle) 0.08s both; }
-.reveal-3 { animation: hero-copy 0.62s var(--ease-out) 0.24s both; }
-.reveal-4 { animation: hero-actions 0.58s var(--ease-out) 0.38s both; }
+.reveal-1 { animation: hero-kicker 0.42s var(--ease-out) both; }
+.reveal-2 { animation: hero-title 0.5s var(--ease-settle) 0.04s both; }
+.reveal-3 { animation: hero-copy 0.48s var(--ease-out) 0.12s both; }
+.reveal-4 { animation: hero-actions 0.46s var(--ease-out) 0.2s both; }
 
 @keyframes hero-kicker {
-  from { opacity: 0.68; letter-spacing: 0.29em; }
-  to { opacity: 1; letter-spacing: 0.22em; }
+  from { transform: translate3d(0, 0.3rem, 0); }
+  to { transform: translate3d(0, 0, 0); }
 }
 
 @keyframes hero-title {
-  from { opacity: 0.78; transform: translateY(0.8rem) scale(0.992); }
-  to { opacity: 1; transform: none; }
+  from { transform: translate3d(0, 0.65rem, 0); }
+  to { transform: translate3d(0, 0, 0); }
 }
 
 @keyframes hero-copy {
-  from { opacity: 0.68; transform: translateY(0.45rem); }
-  to { opacity: 1; transform: none; }
+  from { transform: translate3d(0, 0.4rem, 0); }
+  to { transform: translate3d(0, 0, 0); }
 }
 
 @keyframes hero-actions {
-  from { opacity: 0.7; transform: translateY(0.3rem); }
-  to { opacity: 1; transform: none; }
+  from { transform: translate3d(0, 0.25rem, 0); }
+  to { transform: translate3d(0, 0, 0); }
 }
 
-/* Scroll-driven reveal: progressive enhancement, zero JavaScript.
-   The from-state keeps a legibility floor — content can drift and dim,
-   but can never disappear if a timeline fails to advance (print,
-   capture, scroll restoration). */
+/* Scroll-driven reveal: progressive enhancement, zero JavaScript and a
+   transform-only timeline so text stays fully legible throughout. */
 @keyframes rise-soft {
   from {
-    opacity: 0.4;
-    transform: translateY(0.8rem);
+    transform: translate3d(0, 0.65rem, 0);
   }
   to {
-    opacity: 1;
-    transform: none;
+    transform: translate3d(0, 0, 0);
   }
 }
 
@@ -753,8 +732,7 @@ article figure img {
 }
 
 /* Editorial images arrive like printed plates: they settle into place as
-   they enter the viewport. Same legibility floor as rise-soft — a stalled
-   timeline leaves the image dimmed, never missing. */
+   they enter the viewport without repainting their opacity. */
 @supports (animation-timeline: view()) {
   .essay-body .essay-figure {
     animation: plate-reveal linear both;
@@ -764,29 +742,11 @@ article figure img {
 
   @keyframes plate-reveal {
     from {
-      opacity: 0.4;
-      transform: translateY(1rem) scale(0.988);
+      transform: translate3d(0, 0.75rem, 0);
     }
     to {
-      opacity: 1;
-      transform: none;
+      transform: translate3d(0, 0, 0);
     }
-  }
-}
-
-/* Depth: the light recedes slightly as the reader begins to scroll. */
-@supports (animation-timeline: scroll()) {
-  @keyframes wash-drift {
-    to {
-      transform: translateY(5rem);
-      opacity: 0.45;
-    }
-  }
-
-  .hero-wash::before {
-    animation: wash-drift linear both;
-    animation-timeline: scroll();
-    animation-range: 0 90vh;
   }
 }
 
@@ -852,23 +812,32 @@ footer nav a {
 /* Navigation links draw their underline in, rather than changing color. */
 .nav-link {
   display: inline-flex;
+  position: relative;
   min-height: 2.75rem;
   align-items: center;
   color: var(--ink-muted);
   text-decoration: none;
   padding: 3px 0.1rem;
-  background-image: linear-gradient(currentColor, currentColor);
-  background-size: 0% 1px;
-  background-repeat: no-repeat;
-  background-position: 0 100%;
-  transition:
-    background-size 0.3s cubic-bezier(0.22, 1, 0.36, 1),
-    color 0.2s ease;
+  transition: color 0.2s ease;
+}
+
+.nav-link::after {
+  content: "";
+  position: absolute;
+  inset: auto 0.1rem 0.2rem;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.3s var(--ease-out);
 }
 
 .nav-link:hover {
   color: var(--ink);
-  background-size: 100% 1px;
+}
+
+.nav-link:hover::after {
+  transform: scaleX(1);
 }
 
 /* Topic columns: a hairline above each, whose bronze segment extends on
@@ -906,8 +875,11 @@ footer nav a {
 /* The page you are on keeps its underline drawn. */
 .nav-link[aria-current="page"] {
   color: var(--ink);
-  background-size: 100% 1px;
-  background-image: linear-gradient(var(--accent), var(--accent));
+}
+
+.nav-link[aria-current="page"]::after {
+  background: var(--accent);
+  transform: scaleX(1);
 }
 
 /* ------------------------------------------------------------------ */
@@ -919,8 +891,8 @@ footer nav a {
 }
 
 @keyframes account-page-in {
-  from { opacity: 0.76; transform: translateY(0.55rem); }
-  to { opacity: 1; transform: none; }
+  from { transform: translate3d(0, 0.45rem, 0); }
+  to { transform: translate3d(0, 0, 0); }
 }
 
 .account-ledger {
@@ -986,19 +958,13 @@ footer nav a {
   width: min(100%, 40rem);
   min-height: 22rem;
   border-block: 1px solid var(--rule);
-  background: linear-gradient(
-    105deg,
-    transparent 30%,
-    color-mix(in oklab, var(--accent) 6%, transparent) 48%,
-    transparent 66%
-  );
-  background-size: 220% 100%;
-  animation: account-loading 1.6s ease-in-out infinite;
+  background: color-mix(in oklab, var(--accent) 6%, transparent);
+  animation: account-loading 1.6s ease-in-out infinite alternate;
 }
 
 @keyframes account-loading {
-  from { background-position: 100% 0; }
-  to { background-position: -100% 0; }
+  from { opacity: 0.45; }
+  to { opacity: 0.8; }
 }
 
 @media (min-width: 40rem) {

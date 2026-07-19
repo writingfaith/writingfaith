@@ -16,7 +16,7 @@ export async function SiteHeader() {
     { href: "/essays", label: settings.postPluralTitle },
     { href: "/about", label: settings.aboutLabel },
     { href: "/search", label: settings.searchLabel },
-    { href: "/account", label: "Account" },
+    { href: "/account", label: "Sign Up" },
   ];
 
   return (

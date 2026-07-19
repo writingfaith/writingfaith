@@ -7,9 +7,9 @@ import { useEffect, useRef } from "react";
  * reader's pointer — light through a window shifting as they move, never
  * a spotlight chasing the cursor.
  *
- * Compositor-only (a single translate3d, eased with a rAF lerp), desktop
- * fine-pointers only, and inert under prefers-reduced-motion. Without
- * JavaScript or on touch devices it remains a still layer of light.
+ * Compositor-only (a single translate3d, coalesced to one update per display
+ * frame), desktop fine-pointers only, and inert under prefers-reduced-motion.
+ * Without JavaScript or on touch devices it remains a still layer of light.
  */
 export function HeroLight() {
   const ref = useRef<HTMLDivElement>(null);
@@ -24,37 +24,43 @@ export function HeroLight() {
     let raf = 0;
     let targetX = 0;
     let targetY = 0;
-    let x = 0;
-    let y = 0;
+    let bounds = parent.getBoundingClientRect();
 
-    const step = () => {
-      x += (targetX - x) * 0.05;
-      y += (targetY - y) * 0.05;
-      el.style.transform = `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, 0)`;
-      raf =
-        Math.abs(targetX - x) + Math.abs(targetY - y) > 0.15
-          ? requestAnimationFrame(step)
-          : 0;
+    const refreshBounds = () => {
+      bounds = parent.getBoundingClientRect();
+    };
+
+    const draw = () => {
+      el.style.transform = `translate3d(${targetX.toFixed(2)}px, ${targetY.toFixed(2)}px, 0)`;
+      raf = 0;
+    };
+
+    const scheduleDraw = () => {
+      if (!raf) raf = requestAnimationFrame(draw);
     };
 
     const onMove = (event: PointerEvent) => {
-      const rect = parent.getBoundingClientRect();
-      targetX = ((event.clientX - rect.left) / rect.width - 0.5) * 34;
-      targetY = ((event.clientY - rect.top) / rect.height - 0.5) * 20;
-      if (!raf) raf = requestAnimationFrame(step);
+      if (!bounds.width || !bounds.height) return;
+      targetX = ((event.clientX - bounds.left) / bounds.width - 0.5) * 34;
+      targetY = ((event.clientY - bounds.top) / bounds.height - 0.5) * 20;
+      scheduleDraw();
     };
 
     const onLeave = () => {
       targetX = 0;
       targetY = 0;
-      if (!raf) raf = requestAnimationFrame(step);
+      scheduleDraw();
     };
 
+    parent.addEventListener("pointerenter", refreshBounds, { passive: true });
     parent.addEventListener("pointermove", onMove, { passive: true });
     parent.addEventListener("pointerleave", onLeave, { passive: true });
+    window.addEventListener("resize", refreshBounds, { passive: true });
     return () => {
+      parent.removeEventListener("pointerenter", refreshBounds);
       parent.removeEventListener("pointermove", onMove);
       parent.removeEventListener("pointerleave", onLeave);
+      window.removeEventListener("resize", refreshBounds);
       cancelAnimationFrame(raf);
     };
   }, []);
