@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useId } from "react";
 
 import {
   subscribeToNewsletter,
@@ -9,18 +9,16 @@ import {
 
 const initialState: SubscribeState = {};
 
-export function NewsletterForm({
-  centered = false,
-  defaultEmail,
-}: {
-  centered?: boolean;
-  /** Prefill for signed-in readers, so subscribing is one click. */
-  defaultEmail?: string;
-}) {
+export function NewsletterForm({ centered = false }: { centered?: boolean }) {
   const [state, formAction, pending] = useActionState(
     subscribeToNewsletter,
     initialState,
   );
+  // Unique per instance: the same form can exist twice in the document
+  // transiently while a streamed segment settles, and duplicate ids would
+  // break label association for assistive tech.
+  const fieldId = useId();
+  const helpId = useId();
 
   return (
     <form
@@ -28,21 +26,20 @@ export function NewsletterForm({
       className={`${centered ? "mx-auto" : ""} mt-8 max-w-md text-left`}
     >
       <label
-        htmlFor="newsletter-email"
+        htmlFor={fieldId}
         className="block font-sans text-sm font-medium text-ink-muted"
       >
         Email address
       </label>
       <div className="mt-2 flex flex-col gap-3 sm:flex-row">
         <input
-          id="newsletter-email"
+          id={fieldId}
           type="email"
           name="email"
           required
           autoComplete="email"
-          defaultValue={defaultEmail}
           placeholder="you@example.com"
-          aria-describedby="newsletter-help"
+          aria-describedby={helpId}
           className="field"
         />
         {/* Honeypot: hidden from people (and assistive tech), tempting to bots. */}
@@ -63,7 +60,7 @@ export function NewsletterForm({
           {pending ? "Sending…" : "Subscribe"}
         </button>
       </div>
-      <p id="newsletter-help" className="form-help mt-2.5">
+      <p id={helpId} className="form-help mt-2.5">
         Free, no spam. Unsubscribe anytime with one click.
       </p>
       <div aria-live="polite">
