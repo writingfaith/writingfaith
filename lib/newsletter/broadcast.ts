@@ -20,8 +20,12 @@ export interface EssayForNotification {
  * loser sees `inserted.length === 0` and skips silently.
  */
 export async function notifyNewEssay(essay: EssayForNotification): Promise<void> {
-  const audienceId = process.env.RESEND_AUDIENCE_ID;
-  if (!audienceId) return;
+  // RESEND_AUDIENCE_ID keeps its historical name; its value is a Resend
+  // Segment id (see lib/newsletter/resend-sync.ts — Resend deprecated
+  // Audiences in favor of Segments, and `audienceId` is the old, silently
+  // no-op field on an account that's fully migrated).
+  const segmentId = process.env.RESEND_AUDIENCE_ID;
+  if (!segmentId) return;
 
   const inserted = await db
     .insert(essayNotifications)
@@ -40,7 +44,7 @@ export async function notifyNewEssay(essay: EssayForNotification): Promise<void>
     });
     const resend = getResend();
     const { error } = await resend.broadcasts.create({
-      audienceId,
+      segmentId,
       from: emailFrom,
       subject,
       html,
