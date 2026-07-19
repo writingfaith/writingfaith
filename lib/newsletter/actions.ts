@@ -4,10 +4,10 @@ import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
 
 import { db } from "@/lib/db";
-import { newsletterSubscriptions } from "@/lib/db/schema";
+import { newsletterSubscriptions, users } from "@/lib/db/schema";
 import { emailFrom, getResend, newsletterNotifyEmail } from "@/lib/email";
 import { confirmSubscriptionEmail } from "@/lib/email/templates";
-import { allowRequest } from "@/lib/rate-limit";
+import { allowRequest, allowRequestFromIp } from "@/lib/rate-limit";
 import { absoluteUrl } from "@/lib/site";
 import { normalizeEmail } from "@/lib/validate";
 
@@ -39,7 +39,7 @@ export async function subscribeToNewsletter(
   const headerStore = await headers();
   const ip = headerStore.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
   const [ipAllowed, emailAllowed] = await Promise.all([
-    allowRequest(`subscribe:ip:${ip}`),
+    allowRequestFromIp(`subscribe:${ip}`),
     allowRequest(`subscribe:email:${email}`),
   ]);
   if (!ipAllowed || !emailAllowed) {
@@ -70,14 +70,30 @@ export async function subscribeToNewsletter(
       return { ok: true, message: confirmationMessage };
     }
 
+    // If a reader account already exists for this address, link it — both
+    // flows prove email ownership by delivery, so the address is the join key.
+    const [account] = await db
+      .select({ id: users.id })
+      .from(users)
+      .where(eq(users.email, email));
+
     const token = crypto.randomUUID();
     if (existing) {
       await db
         .update(newsletterSubscriptions)
-        .set({ status: "pending", token, requestedAt: new Date() })
+        .set({
+          status: "pending",
+          token,
+          requestedAt: new Date(),
+          ...(account ? { userId: account.id } : {}),
+        })
         .where(eq(newsletterSubscriptions.id, existing.id));
     } else {
-      await db.insert(newsletterSubscriptions).values({ email, token });
+      await db.insert(newsletterSubscriptions).values({
+        email,
+        token,
+        ...(account ? { userId: account.id } : {}),
+      });
     }
 
     const { subject, html, text } = confirmSubscriptionEmail({

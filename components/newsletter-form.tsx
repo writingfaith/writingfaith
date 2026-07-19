@@ -9,7 +9,14 @@ import {
 
 const initialState: SubscribeState = {};
 
-export function NewsletterForm({ centered = false }: { centered?: boolean }) {
+export function NewsletterForm({
+  centered = false,
+  defaultEmail,
+}: {
+  centered?: boolean;
+  /** Prefill for signed-in readers, so subscribing is one click. */
+  defaultEmail?: string;
+}) {
   const [state, formAction, pending] = useActionState(
     subscribeToNewsletter,
     initialState,
@@ -33,6 +40,7 @@ export function NewsletterForm({ centered = false }: { centered?: boolean }) {
           name="email"
           required
           autoComplete="email"
+          defaultValue={defaultEmail}
           placeholder="you@example.com"
           aria-describedby="newsletter-help"
           className="field"

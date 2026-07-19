@@ -20,6 +20,20 @@ const limiter = configured
     })
   : null;
 
+/**
+ * Per-IP limiter, looser than the per-principal one: many legitimate people
+ * can share one IP (an office, a church hall, CGNAT), so a strict IP limit
+ * silently blocks real subscribers. The tight per-email limit above still
+ * stops any single address from being spammed.
+ */
+const sharedIpLimiter = configured
+  ? new Ratelimit({
+      redis: Redis.fromEnv(),
+      limiter: Ratelimit.slidingWindow(30, "1 h"),
+      prefix: "writingfaith:ip",
+    })
+  : null;
+
 const quoteCardLimiter = configured
   ? new Ratelimit({
       redis: Redis.fromEnv(),
@@ -45,6 +59,13 @@ export async function allowRequest(key: string): Promise<boolean> {
     return true;
   }
   const { success } = await limiter.limit(key);
+  return success;
+}
+
+/** IP-keyed variant of allowRequest — see sharedIpLimiter for why it's looser. */
+export async function allowRequestFromIp(ip: string): Promise<boolean> {
+  if (!sharedIpLimiter) return true;
+  const { success } = await sharedIpLimiter.limit(ip);
   return success;
 }
 

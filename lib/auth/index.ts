@@ -1,3 +1,4 @@
+import { and, eq, isNull } from "drizzle-orm";
 import NextAuth from "next-auth";
 import type { DefaultSession } from "next-auth";
 import Google from "next-auth/providers/google";
@@ -7,12 +8,14 @@ import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { db } from "@/lib/db";
 import {
   accounts,
+  newsletterSubscriptions,
   sessions,
   users,
   verificationTokens,
 } from "@/lib/db/schema";
 import { emailFrom, getResend } from "@/lib/email";
 import { magicLinkEmail } from "@/lib/email/templates";
+import { normalizeEmail } from "@/lib/validate";
 
 /**
  * Auth.js v5, deliberately isolated behind this module (ADR 0001 §Review):
@@ -83,6 +86,32 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     session({ session, user }) {
       session.user.id = user.id;
       return session;
+    },
+  },
+  events: {
+    /**
+     * Adopt any newsletter subscription made with this email before the
+     * account existed — accounts and subscriptions are one system keyed on
+     * the address. Guarded update (userId IS NULL) so it's a no-op on every
+     * sign-in after the first. Best-effort: sign-in must never fail over
+     * newsletter bookkeeping.
+     */
+    async signIn({ user }) {
+      const email = normalizeEmail(user.email);
+      if (!user.id || !email) return;
+      try {
+        await db
+          .update(newsletterSubscriptions)
+          .set({ userId: user.id })
+          .where(
+            and(
+              eq(newsletterSubscriptions.email, email),
+              isNull(newsletterSubscriptions.userId),
+            ),
+          );
+      } catch (error) {
+        console.error("[auth] Failed to adopt newsletter subscription:", error);
+      }
     },
   },
 });

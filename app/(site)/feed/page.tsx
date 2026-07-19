@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { NewsletterForm } from "@/components/newsletter-form";
+import { NewsletterSignup } from "@/components/newsletter-signup";
 import { OliveBranch, Ornament } from "@/components/ornaments";
 import { absoluteUrl } from "@/lib/site";
 import { getSiteSettings } from "@/lib/site-settings";
@@ -48,7 +48,7 @@ export default async function FeedPage() {
         <p className="mx-auto mt-4 max-w-[44ch] leading-relaxed text-ink-muted">
           {settings.newsletterText}
         </p>
-        <NewsletterForm centered />
+        <NewsletterSignup centered />
       </section>
 
       <section aria-labelledby="rss-heading" className="reveal-late pb-16 sm:pb-20">

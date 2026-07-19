@@ -4,7 +4,7 @@ import { EssayList, FeaturedEssay } from "@/components/essay-list";
 import { ContinueReading } from "@/components/continue-reading";
 import { HeroLight } from "@/components/hero-light";
 import { JsonLd } from "@/components/json-ld";
-import { NewsletterForm } from "@/components/newsletter-form";
+import { NewsletterSignup } from "@/components/newsletter-signup";
 import { OliveBranch, Ornament, SiteMark } from "@/components/ornaments";
 import { contentTags, sanityFetch } from "@/lib/sanity/fetch";
 import { latestArticlesQuery } from "@/lib/sanity/queries";
@@ -182,7 +182,7 @@ export default async function HomePage() {
           <p className="mx-auto mt-4 max-w-[44ch] leading-relaxed text-ink-muted">
             {settings.newsletterText}
           </p>
-          <NewsletterForm centered />
+          <NewsletterSignup centered />
         </section>
       </div>
     </div>
