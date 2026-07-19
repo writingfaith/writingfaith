@@ -86,3 +86,15 @@ export function confirmSubscriptionEmail({
     text: `Confirm your subscription to WritingFaith:\n\n${confirmUrl}\n\nIf this wasn't you, do nothing — you won't be subscribed.\n\nUnsubscribe: ${unsubscribeUrl}`,
   };
 }
+
+export function newSubscriberNotificationEmail({ email }: { email: string }) {
+  return {
+    subject: "New WritingFaith newsletter subscriber",
+    html: shell({
+      body: `<p style="margin:0 0 16px;">A new reader just confirmed their subscription:</p>
+        <p style="margin:0;font-family:Helvetica,Arial,sans-serif;font-size:15px;">${escapeHtml(email)}</p>`,
+      footer: `Automated notification from writingfaith.`,
+    }),
+    text: `New WritingFaith newsletter subscriber:\n\n${email}`,
+  };
+}

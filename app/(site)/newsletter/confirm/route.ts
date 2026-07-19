@@ -4,6 +4,8 @@ import type { NextRequest } from "next/server";
 
 import { db } from "@/lib/db";
 import { newsletterSubscriptions } from "@/lib/db/schema";
+import { emailFrom, getResend, newsletterNotifyEmail } from "@/lib/email";
+import { newSubscriberNotificationEmail } from "@/lib/email/templates";
 import { syncContactToResend } from "@/lib/newsletter/resend-sync";
 import { isNewsletterToken } from "@/lib/newsletter/tokens";
 
@@ -30,6 +32,25 @@ export async function GET(request: NextRequest) {
         syncedToResend: synced,
       })
       .where(eq(newsletterSubscriptions.id, subscription.id));
+
+    // Best-effort: a failure here must never block the reader's confirmation.
+    if (newsletterNotifyEmail) {
+      try {
+        const { subject, html, text } = newSubscriberNotificationEmail({
+          email: subscription.email,
+        });
+        const { error } = await getResend().emails.send({
+          from: emailFrom,
+          to: newsletterNotifyEmail,
+          subject,
+          html,
+          text,
+        });
+        if (error) throw new Error(error.message);
+      } catch (error) {
+        console.error("[newsletter] Failed to send new-subscriber notification:", error);
+      }
+    }
   }
 
   redirect("/newsletter/confirmed");

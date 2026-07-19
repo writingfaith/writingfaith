@@ -4,6 +4,10 @@ import { Resend } from "resend";
 export const emailFrom =
   process.env.EMAIL_FROM ?? "WritingFaith <onboarding@resend.dev>";
 
+/** Where "new subscriber" notifications are sent, if configured. */
+export const newsletterNotifyEmail =
+  process.env.NEWSLETTER_NOTIFY_EMAIL?.trim() || undefined;
+
 let _resend: Resend | null = null;
 
 /** Lazy client so module evaluation never depends on env configuration. */

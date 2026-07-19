@@ -5,7 +5,7 @@ import { headers } from "next/headers";
 
 import { db } from "@/lib/db";
 import { newsletterSubscriptions } from "@/lib/db/schema";
-import { emailFrom, getResend } from "@/lib/email";
+import { emailFrom, getResend, newsletterNotifyEmail } from "@/lib/email";
 import { confirmSubscriptionEmail } from "@/lib/email/templates";
 import { allowRequest } from "@/lib/rate-limit";
 import { absoluteUrl } from "@/lib/site";
@@ -90,6 +90,7 @@ export async function subscribeToNewsletter(
       subject,
       html,
       text,
+      ...(newsletterNotifyEmail ? { replyTo: newsletterNotifyEmail } : {}),
     });
     if (error) throw new Error(error.message);
 
