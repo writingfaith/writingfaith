@@ -2,6 +2,10 @@ import { revalidateTag } from "next/cache";
 import type { NextRequest } from "next/server";
 import { parseBody } from "next-sanity/webhook";
 
+import { notifyNewEssay } from "@/lib/newsletter/broadcast";
+import { client } from "@/lib/sanity/client";
+import { articleNotificationBySlugQuery } from "@/lib/sanity/queries";
+
 const allowedTypes = new Set([
   "article",
   "author",
@@ -76,6 +80,23 @@ export async function POST(req: NextRequest) {
 
     for (const tag of tags) {
       revalidateTag(tag, { expire: 0 });
+    }
+
+    // Best-effort: a broadcast failure must never fail the webhook — Sanity
+    // retries non-2xx responses, and retrying would re-run the (already
+    // succeeded) cache revalidation for no benefit. A missed notification
+    // here is still caught by the scheduled-essay cron sweep.
+    if (body._type === "article" && body.slug) {
+      try {
+        const essay = await client.fetch<{
+          title: string;
+          excerpt?: string;
+          slug: string;
+        } | null>(articleNotificationBySlugQuery, { slug: body.slug });
+        if (essay) await notifyNewEssay(essay);
+      } catch (error) {
+        console.error("[revalidate] new-essay notification failed:", error);
+      }
     }
 
     return Response.json(

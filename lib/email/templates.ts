@@ -87,6 +87,35 @@ export function confirmSubscriptionEmail({
   };
 }
 
+/**
+ * Sent as a Resend Broadcast (not `emails.send`), so `{{{RESEND_UNSUBSCRIBE_URL}}}`
+ * is Resend's own merge tag — it resolves per-recipient and is required for
+ * List-Unsubscribe compliance on broadcast sends (ADR 0001 §4).
+ */
+export function newEssayBroadcastEmail({
+  title,
+  excerpt,
+  url,
+  postLabel,
+}: {
+  title: string;
+  excerpt?: string;
+  url: string;
+  postLabel: string;
+}) {
+  return {
+    subject: `New ${postLabel}: ${title}`,
+    html: shell({
+      body: `<p style="margin:0 0 16px;">A new ${escapeHtml(postLabel)} has been published on WritingFaith.</p>
+        <p style="margin:0 0 16px;font-family:Georgia,'Times New Roman',serif;font-size:20px;">${escapeHtml(title)}</p>
+        ${excerpt ? `<p style="margin:0 0 16px;color:#4a4335;">${escapeHtml(excerpt)}</p>` : ""}
+        ${button(url, `Read the ${escapeHtml(postLabel)}`)}`,
+      footer: `You're receiving this because you subscribed at writingfaith. <a href="{{{RESEND_UNSUBSCRIBE_URL}}}" style="color:#6f6656;">Unsubscribe</a>`,
+    }),
+    text: `New ${postLabel}: ${title}\n\n${excerpt ? excerpt + "\n\n" : ""}Read it: ${url}\n\nUnsubscribe: {{{RESEND_UNSUBSCRIBE_URL}}}`,
+  };
+}
+
 export function newSubscriberNotificationEmail({ email }: { email: string }) {
   return {
     subject: "New WritingFaith newsletter subscriber",

@@ -170,6 +170,36 @@ export const articleTitleBySlugQuery = groq`
   }
 `;
 
+/**
+ * Lean lookup for the publish-webhook's new-essay broadcast: just enough to
+ * write the email, and `publishedAt <= now()` so a scheduled essay (future
+ * publishedAt, saved now but not yet visible) is correctly excluded.
+ */
+export const articleNotificationBySlugQuery = groq`
+  *[_type == "article" && slug.current == $slug && publishedAt <= now()][0] {
+    title,
+    excerpt,
+    "slug": slug.current
+  }
+`;
+
+/**
+ * Candidate pool for the scheduled-essay cron sweep: essays that became
+ * visible since `$since`, whether because they were just published or
+ * because a future `publishedAt` has now arrived with no webhook to prompt
+ * it. The window is a safety margin, not a precise "unnotified" filter —
+ * lib/newsletter/broadcast.ts's dedup table does the real filtering.
+ */
+export const recentlyPublishedArticlesQuery = groq`
+  *[_type == "article" && defined(slug.current)
+      && publishedAt <= now() && publishedAt >= $since]
+    | order(publishedAt asc) {
+      title,
+      excerpt,
+      "slug": slug.current
+    }
+`;
+
 /** The Site Settings singleton; every field optional, defaults in lib/site-settings.ts. */
 export const siteSettingsQuery = groq`
   *[_type == "siteSettings" && _id == "siteSettings"][0] {

@@ -95,3 +95,15 @@ export const newsletterSubscriptions = pgTable("newsletter_subscription", {
   /** True once mirrored into the configured Resend audience. */
   syncedToResend: boolean("syncedToResend").notNull().default(false),
 });
+
+/**
+ * One row per essay that has triggered a "new essay" broadcast. The publish
+ * webhook and the scheduled-essay cron sweep both attempt to notify; the
+ * unique `slug` plus an insert-first-check-after pattern (see
+ * lib/newsletter/broadcast.ts) makes whichever fires first win the race
+ * without double-emailing subscribers.
+ */
+export const essayNotifications = pgTable("essay_notification", {
+  slug: text("slug").primaryKey(),
+  notifiedAt: timestamp("notifiedAt", { mode: "date" }).notNull().defaultNow(),
+});
