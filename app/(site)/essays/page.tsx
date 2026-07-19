@@ -55,7 +55,7 @@ export default async function EssaysPage() {
                 <li key={category.slug}>
                   <Link
                     href={`/essays/category/${category.slug}`}
-                    className="text-ink-muted no-underline transition-colors hover:text-accent-strong"
+                    className="inline-flex min-h-11 items-center text-ink-muted no-underline transition-colors hover:text-accent-strong"
                   >
                     {category.title}
                     <span className="text-ink-faint"> ({category.count})</span>

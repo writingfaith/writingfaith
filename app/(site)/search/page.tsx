@@ -116,12 +116,20 @@ function SearchResults({
 function SearchForm({
   settings,
   initialQuery,
+  pending = false,
 }: {
   settings: SiteSettings;
   initialQuery?: string;
+  pending?: boolean;
 }) {
   return (
-    <form action="/search" method="get" role="search" className="mt-8">
+    <form
+      action="/search"
+      method="get"
+      role="search"
+      aria-busy={pending}
+      className="mt-8"
+    >
       <label
         htmlFor="search-input"
         className="block font-sans text-sm text-ink-muted"
@@ -134,12 +142,14 @@ function SearchForm({
           type="search"
           name="q"
           defaultValue={initialQuery}
+          disabled={pending}
           autoComplete="off"
           className="field"
           placeholder={settings.searchPlaceholder}
         />
         <button
           type="submit"
+          disabled={pending}
           className="btn w-full shrink-0 sm:w-auto"
         >
           {settings.searchButtonLabel}
@@ -211,9 +221,11 @@ export default async function SearchPage({
     <div className="mx-auto max-w-4xl px-6">
       <section className="py-16 sm:py-20">
         <h1 className="eyebrow">{settings.searchHeading}</h1>
-        {/* searchParams is runtime data under Cache Components, so
-            everything that reads it streams inside Suspense. */}
-        <Suspense fallback={<SearchForm settings={settings} />}>
+        {/* searchParams is runtime data under Cache Components, so everything
+            that reads it streams inside Suspense. The fallback is deliberately
+            inert: replacing a live uncontrolled input could otherwise discard
+            a fast typist's query when the streamed form arrives. */}
+        <Suspense fallback={<SearchForm settings={settings} pending />}>
           <SearchContent settings={settings} searchParams={searchParams} />
         </Suspense>
       </section>

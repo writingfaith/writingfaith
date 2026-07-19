@@ -151,18 +151,6 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Cross-fade between pages — the turn of a page, not a jump cut.
-   Progressive: browsers without the API navigate normally. */
-@view-transition {
-  navigation: auto;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  @view-transition {
-    navigation: none;
-  }
-}
-
 body {
   background-color: var(--paper);
   color: var(--ink);
@@ -326,6 +314,11 @@ body {
   outline: none;
   border-color: var(--accent);
   box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 18%, transparent);
+}
+
+.field:disabled {
+  cursor: wait;
+  opacity: 0.68;
 }
 
 /* Form status blocks: success and error, never color-only. */
@@ -1177,6 +1170,7 @@ mark {
 .quote-share-button {
   position: fixed;
   z-index: 60;
+  min-height: 2.75rem;
   transform: translateX(-50%);
   font-family: var(--font-sans);
   font-size: 0.75rem;

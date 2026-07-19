@@ -62,9 +62,15 @@ export default async function FeedPage() {
             published:
           </p>
           <p className="mt-6">
-            <code className="inline-block max-w-full overflow-x-auto border border-rule bg-paper px-4 py-2 font-mono text-sm text-accent-strong">
-              {feedUrl}
-            </code>
+            <a
+              href="/feed.xml"
+              type="application/rss+xml"
+              className="inline-flex min-h-11 max-w-full items-center no-underline"
+            >
+              <code className="inline-block max-w-full overflow-x-auto border border-rule bg-paper px-4 py-2 font-mono text-sm text-accent-strong">
+                {feedUrl}
+              </code>
+            </a>
           </p>
           <p className="mt-5 font-sans text-sm text-ink-faint">
             New to RSS? It’s the oldest, calmest way to follow writers —{" "}

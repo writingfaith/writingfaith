@@ -244,7 +244,10 @@ export default async function EssayPage({
 
         {/* The essay's sign-off: no byline — the writing stands on its own. */}
         <footer className="mx-auto mt-14 max-w-2xl text-center">
-          <Link href="/about" className="link font-sans text-sm">
+          <Link
+            href="/about"
+            className="link inline-flex min-h-11 items-center font-sans text-sm"
+          >
             About {settings.siteName}
           </Link>
         </footer>
@@ -259,7 +262,10 @@ export default async function EssayPage({
             <h2 id="continue-reading" className="eyebrow">
               Continue reading
             </h2>
-            <Link href="/essays" className="link font-sans text-sm">
+            <Link
+              href="/essays"
+              className="link inline-flex min-h-11 items-center font-sans text-sm"
+            >
               All {settings.postPlural}
             </Link>
           </div>

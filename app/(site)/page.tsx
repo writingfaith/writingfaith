@@ -68,7 +68,10 @@ export default async function HomePage() {
             <Link href="/essays" className="btn btn-primary no-underline">
               Begin reading
             </Link>
-            <Link href="/about" className="link font-sans text-sm">
+            <Link
+              href="/about"
+              className="link inline-flex min-h-11 items-center font-sans text-sm"
+            >
               About the writer
             </Link>
           </div>
@@ -137,7 +140,10 @@ export default async function HomePage() {
               <h2 id="more-essays" className="eyebrow">
                 Recent {settings.postPlural}
               </h2>
-              <Link href="/essays" className="link font-sans text-sm">
+              <Link
+                href="/essays"
+                className="link inline-flex min-h-11 items-center font-sans text-sm"
+              >
                 All {settings.postPlural}
               </Link>
             </div>
@@ -162,7 +168,10 @@ export default async function HomePage() {
                 {settings.writerBio}
               </p>
               <p className="mt-4">
-                <Link href="/about" className="link font-sans text-sm">
+                <Link
+                  href="/about"
+                  className="link inline-flex min-h-11 items-center font-sans text-sm"
+                >
                   Read more about {settings.siteName}
                 </Link>
               </p>

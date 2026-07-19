@@ -34,7 +34,12 @@ export default function ContactPage() {
       {contactEmail ? (
         <>
           <p>
-            <a href={`mailto:${contactEmail}`}>Send a message</a>
+            <a
+              href={`mailto:${contactEmail}`}
+              className="link inline-flex min-h-11 items-center"
+            >
+              Send a message
+            </a>
           </p>
           <p>
             Every message is read, though with writing and life alongside,
