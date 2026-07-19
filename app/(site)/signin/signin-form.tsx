@@ -6,7 +6,7 @@ import { signInWithEmail, type SignInState } from "@/lib/auth/actions";
 
 const initialState: SignInState = {};
 
-export function SignInForm({ redirectTo = "/studio" }: { redirectTo?: string }) {
+export function SignInForm({ redirectTo = "/account" }: { redirectTo?: string }) {
   const [state, formAction, pending] = useActionState(
     signInWithEmail,
     initialState,

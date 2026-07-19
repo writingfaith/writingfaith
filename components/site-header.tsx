@@ -16,6 +16,7 @@ export async function SiteHeader() {
     { href: "/essays", label: settings.postPluralTitle },
     { href: "/about", label: settings.aboutLabel },
     { href: "/search", label: settings.searchLabel },
+    { href: "/account", label: "Account" },
   ];
 
   return (
@@ -28,7 +29,7 @@ export async function SiteHeader() {
           <BrandMark name={settings.siteName} />
         </Link>
         <nav aria-label="Main">
-          <ul className="flex flex-wrap items-baseline justify-center gap-x-7 gap-y-2 font-sans text-[0.8125rem] uppercase tracking-[0.16em] text-ink-muted [&_a]:whitespace-nowrap">
+          <ul className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1 font-sans text-[0.75rem] uppercase tracking-[0.15em] text-ink-muted sm:gap-x-7 sm:text-[0.8125rem] sm:tracking-[0.16em] [&_a]:whitespace-nowrap">
             {navigation.map((item) => (
               <li key={item.href}>
                 <NavLink href={item.href}>{item.label}</NavLink>

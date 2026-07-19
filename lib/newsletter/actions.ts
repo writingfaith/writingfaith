@@ -1,18 +1,32 @@
 "use server";
 
 import { eq } from "drizzle-orm";
+import { refresh } from "next/cache";
 import { headers } from "next/headers";
 
+import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { newsletterSubscriptions, users } from "@/lib/db/schema";
 import { emailFrom, getResend, newsletterNotifyEmail } from "@/lib/email";
 import { confirmSubscriptionEmail } from "@/lib/email/templates";
+import {
+  subscribeVerifiedReader,
+  unsubscribeVerifiedReader,
+  type NewsletterStatus,
+} from "@/lib/newsletter/account";
 import { allowRequest, allowRequestFromIp } from "@/lib/rate-limit";
 import { absoluteUrl } from "@/lib/site";
 import { normalizeEmail } from "@/lib/validate";
 
 export interface SubscribeState {
   ok?: boolean;
+  message?: string;
+}
+
+export interface AccountNewsletterState {
+  ok?: boolean;
+  status?: NewsletterStatus;
+  syncedToResend?: boolean;
   message?: string;
 }
 
@@ -48,6 +62,8 @@ export async function subscribeToNewsletter(
     };
   }
 
+  let storedSubscriptionId: string | null = null;
+
   try {
     const resend = getResend();
     const [existing] = await db
@@ -79,6 +95,7 @@ export async function subscribeToNewsletter(
 
     const token = crypto.randomUUID();
     if (existing) {
+      storedSubscriptionId = existing.id;
       await db
         .update(newsletterSubscriptions)
         .set({
@@ -89,11 +106,15 @@ export async function subscribeToNewsletter(
         })
         .where(eq(newsletterSubscriptions.id, existing.id));
     } else {
-      await db.insert(newsletterSubscriptions).values({
-        email,
-        token,
-        ...(account ? { userId: account.id } : {}),
-      });
+      const [created] = await db
+        .insert(newsletterSubscriptions)
+        .values({
+          email,
+          token,
+          ...(account ? { userId: account.id } : {}),
+        })
+        .returning({ id: newsletterSubscriptions.id });
+      storedSubscriptionId = created?.id ?? null;
     }
 
     const { subject, html, text } = confirmSubscriptionEmail({
@@ -112,6 +133,20 @@ export async function subscribeToNewsletter(
 
     return { ok: true, message: confirmationMessage };
   } catch (error) {
+    // A failed delivery must not trigger the 15-minute cooldown. Keep the
+    // pending row/token, but make the next attempt immediately eligible.
+    if (storedSubscriptionId) {
+      await db
+        .update(newsletterSubscriptions)
+        .set({ requestedAt: new Date(0) })
+        .where(eq(newsletterSubscriptions.id, storedSubscriptionId))
+        .catch((resetError) => {
+          console.error(
+            "[newsletter] failed to reset confirmation cooldown:",
+            resetError,
+          );
+        });
+    }
     console.error("[newsletter] subscribe failed:", error);
     return {
       message: "Something went wrong on our side. Please try again shortly.",
@@ -124,3 +159,47 @@ const confirmationMessage =
 
 /** Window during which repeat subscribe attempts reuse the email already sent. */
 const CONFIRMATION_COOLDOWN_MS = 15 * 60 * 1000;
+
+/**
+ * Authenticated account management. The email and user id always come from
+ * the database-backed session, never from form input, so this public Server
+ * Action cannot be used to alter another subscriber.
+ */
+export async function manageAccountNewsletter(
+  _prev: AccountNewsletterState,
+  formData: FormData,
+): Promise<AccountNewsletterState> {
+  const session = await auth();
+  const email = normalizeEmail(session?.user?.email);
+  const userId = session?.user?.id;
+  if (!email || !userId) {
+    return { message: "Your session has expired. Please sign in again." };
+  }
+
+  const intent = formData.get("intent");
+  if (intent !== "subscribe" && intent !== "unsubscribe") {
+    return { message: "That account action is not available." };
+  }
+
+  try {
+    const state =
+      intent === "subscribe"
+        ? await subscribeVerifiedReader({ userId, email })
+        : await unsubscribeVerifiedReader({ userId, email });
+    refresh();
+    return {
+      ok: true,
+      status: state.status ?? undefined,
+      syncedToResend: state.syncedToResend,
+      message:
+        intent === "subscribe"
+          ? state.syncedToResend
+            ? "You’re subscribed. New essays will arrive in this inbox."
+            : "You’re subscribed here, but delivery still needs to synchronize. Please retry."
+          : "You’re unsubscribed. You can rejoin here whenever you like.",
+    };
+  } catch (error) {
+    console.error("[newsletter] account update failed:", error);
+    return { message: "We couldn’t update your subscription. Please try again." };
+  }
+}

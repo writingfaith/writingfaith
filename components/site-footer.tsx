@@ -33,6 +33,7 @@ export async function SiteFooter() {
     { href: "/about", label: settings.aboutLabel },
     { href: "/contact", label: "Contact" },
     { href: "/feed", label: "Newsletter" },
+    { href: "/account", label: "Account" },
   ];
 
   return (
@@ -47,7 +48,7 @@ export async function SiteFooter() {
               {settings.footerBlurb}
             </p>
           </div>
-          <nav aria-label="Footer" className="flex gap-16">
+          <nav aria-label="Footer" className="flex flex-wrap gap-x-12 gap-y-8 sm:gap-x-16">
             <div>
               <p className="eyebrow text-xs">Read</p>
               <ul className="mt-4 space-y-2.5 font-sans text-sm">

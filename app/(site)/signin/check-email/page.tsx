@@ -20,7 +20,8 @@ export default function CheckEmailPage() {
     >
       <p>
         We’ve sent a one-time link to your email address. It’s valid for 24
-        hours and can be used once. You can close this page.
+        hours and can be used once. Following it opens your reader account and
+        connects that address to new essay emails.
       </p>
     </StatusPage>
   );

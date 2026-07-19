@@ -96,6 +96,7 @@ export default async function RootLayout({
   return (
     <html
       lang="en"
+      data-scroll-behavior="smooth"
       data-font={theme.fontTheme}
       data-accent={theme.accentTheme}
       className={`${newsreader.variable} ${literata.variable} ${ebGaramond.variable} ${sourceSerif.variable} ${instrumentSans.variable} h-full antialiased`}

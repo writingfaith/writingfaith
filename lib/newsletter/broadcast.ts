@@ -1,3 +1,5 @@
+import { eq } from "drizzle-orm";
+
 import { db } from "@/lib/db";
 import { essayNotifications } from "@/lib/db/schema";
 import { emailFrom, getResend, newsletterNotifyEmail } from "@/lib/email";
@@ -43,21 +45,38 @@ export async function notifyNewEssay(essay: EssayForNotification): Promise<void>
       postLabel: settings.postSingular,
     });
     const resend = getResend();
-    const { error } = await resend.broadcasts.create({
-      name: subject,
-      segmentId,
-      from: emailFrom,
-      subject,
-      html,
-      text,
-      send: true,
-      ...(newsletterNotifyEmail ? { replyTo: newsletterNotifyEmail } : {}),
-    });
+    const { error } = await resend.broadcasts.create(
+      {
+        name: subject,
+        segmentId,
+        from: emailFrom,
+        subject,
+        html,
+        text,
+        send: true,
+        ...(newsletterNotifyEmail ? { replyTo: newsletterNotifyEmail } : {}),
+      },
+      {
+        // Resend honors this standard header for safe retries. A stable key
+        // plus the database reservation protects both webhook/cron races and
+        // ambiguous network failures from producing duplicate sends.
+        headers: { "Idempotency-Key": `new-essay/${essay.slug}` },
+      },
+    );
     if (error) throw new Error(error.message);
   } catch (error) {
-    // The dedup row is already committed, so a send failure here won't
-    // retry on the next webhook/cron pass — logged for manual follow-up
-    // rather than risking a duplicate broadcast on retry.
+    // Release the reservation so the next cron sweep can retry. Resend keeps
+    // idempotency keys for its retry window, covering the ambiguous case where
+    // it accepted the broadcast but the response never reached this process.
+    await db
+      .delete(essayNotifications)
+      .where(eq(essayNotifications.slug, essay.slug))
+      .catch((cleanupError) => {
+        console.error(
+          `[newsletter] Failed to release notification reservation for "${essay.slug}":`,
+          cleanupError,
+        );
+      });
     console.error(`[newsletter] Failed to broadcast new essay "${essay.slug}":`, error);
   }
 }

@@ -9,7 +9,7 @@ import { getSiteSettings } from "@/lib/site-settings";
 export const metadata: Metadata = {
   title: "Follow",
   description:
-    "Every new essay, delivered how you like it — by email or through an RSS feed. No account, no algorithm.",
+    "Every new essay, delivered how you like it — by email or through an RSS feed. No password, no algorithm.",
   alternates: { canonical: "/feed" },
 };
 
@@ -29,7 +29,7 @@ export default async function FeedPage() {
           Every essay, delivered <em className="text-accent">quietly</em>.
         </h1>
         <p className="mx-auto mt-6 max-w-[48ch] leading-relaxed text-ink-muted">
-          No account, no algorithm, no feed to refresh. Choose how new essays
+          No password, no algorithm, no feed to refresh. Choose how new essays
           reach you — they arrive when something is worth reading, and never
           otherwise.
         </p>

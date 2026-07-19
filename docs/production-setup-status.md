@@ -1,16 +1,20 @@
 # WritingFaith production setup status
 
-Last updated: 2026-07-09
+Last updated: 2026-07-19
 
 ## Completed
 
 - Vercel project linked: `writingfaiths-projects/writingfaith`.
-- Canonical production URL: `https://writingfaith.vercel.app`.
+- Canonical production URL: `https://www.writingfaith.com.au`.
 - Sanity project `m5flo8s9` configured for the production origin.
 - Sanity production CORS origin is present for `https://writingfaith.vercel.app`.
 - Sanity revalidation webhook is enabled for create/update/delete on `article`, `author`, `category`, and `page`.
 - Neon `DATABASE_URL` is configured in Vercel and migrations have been applied.
 - Resend API key is configured in Vercel.
+- Resend sending domain `writingfaith.com.au` is verified in Tokyo and
+  `EMAIL_FROM` uses `Writing Faith <letters@writingfaith.com.au>`.
+- Resend's General Segment contains all 5 active subscribers; all 5 Postgres
+  subscriptions are linked to reader accounts and marked synchronized.
 - Upstash Redis database `writingfaith` is configured in Vercel for REST-based rate limiting.
 - Required Vercel env var names are present in Production, Preview, and Development:
   - `DATABASE_URL`
@@ -49,24 +53,17 @@ Live checks after redeploy:
 - Unauthenticated `/studio` renders the owner sign-in gate, not the Sanity
   editor.
 - Unauthenticated `/api/draft-mode/enable` returns 401.
-
-## Remaining Production Blocker
-
-Resend has no verified sending domain yet. Until a domain is added in Resend and its DNS records verify, production newsletter delivery is not fully ready.
-
-Required manual DNS step:
-
-1. Open Resend -> Domains.
-2. Add a domain that is owned and controlled for WritingFaith.
-3. Add the DNS records Resend provides.
-4. Wait for Resend to mark the domain verified.
-5. Set `EMAIL_FROM` to a sender address on that verified domain.
-6. Redeploy Vercel.
+- Reader magic-link mail arrives from the verified site domain.
+- Signed-in subscribers see their account state instead of the subscribe form.
+- Account unsubscribe and resubscribe both synchronize with Resend.
 
 ## Production Readiness Notes
 
 - Publishing essays through Sanity Studio is ready from the application/configuration side, and the embedded Studio exposes Essays, Pages, Categories, Authors, rich body content, scripture quotations, pull quotes, and accessible images.
-- Subscriber collection is implemented with double opt-in, Neon storage, Resend email, and Upstash rate limiting, but production email delivery remains blocked by the missing verified Resend domain.
-- `RESEND_AUDIENCE_ID` is optional. Without it, confirmed subscribers remain in Neon, but they are not mirrored into a Resend Audience for broadcast management.
+- Subscriber collection uses double opt-in for the public form, verified-email
+  account consent for signed-in readers, Neon storage, Resend Segment delivery,
+  and Upstash rate limiting.
+- `RESEND_AUDIENCE_ID` must contain the configured Resend Segment id for essay
+  broadcasts and contact synchronization.
 - `AUTH_GOOGLE_ID` and `AUTH_GOOGLE_SECRET` are optional. Google OAuth stays hidden until both are configured.
 - Privacy, Terms, and Disclaimer pages still contain legal-review markers and should be reviewed by a qualified person before a public launch using a custom domain.

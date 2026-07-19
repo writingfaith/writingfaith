@@ -50,6 +50,7 @@
     "@sanity/preview-url-secret": "4.0.8",
     "@vercel/frameworks": "3.30.5",
     "@sanity/uuid": "3.0.3",
+    "adm-zip": "0.6.0",
     "esbuild": "0.25.12",
     "js-yaml": "4.3.0",
     "postcss": "8.5.16",

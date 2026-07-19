@@ -2,7 +2,7 @@ import { Resend } from "resend";
 
 /** Sender identity for all transactional mail. */
 export const emailFrom =
-  process.env.EMAIL_FROM ?? "WritingFaith <onboarding@resend.dev>";
+  process.env.EMAIL_FROM ?? "Writing Faith <letters@writingfaith.com.au>";
 
 /** Where "new subscriber" notifications are sent, if configured. */
 export const newsletterNotifyEmail =

@@ -48,6 +48,13 @@
   /* Rhythm */
   --space-section: clamp(4.5rem, 3rem + 6vw, 8rem);
   --measure: 66ch;
+
+  /* Motion: editorial and restrained, shared across every interaction. */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-settle: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 140ms;
+  --duration-base: 280ms;
+  --duration-slow: 520ms;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -169,17 +176,6 @@ body {
   font-variant-numeric: oldstyle-nums;
 }
 
-/* Filmic grain: the faint tooth of real paper. Fixed layer, no requests. */
-body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 80;
-  pointer-events: none;
-  opacity: 0.028;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-
 ::selection {
   background-color: color-mix(in oklab, var(--accent) 24%, transparent);
 }
@@ -226,7 +222,10 @@ body::after {
 
 /* Buttons. Quiet by default; bronze for the one action that matters. */
 .btn {
-  display: inline-block;
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: center;
   font-family: var(--font-sans);
   font-size: 0.8125rem;
   letter-spacing: 0.1em;
@@ -237,10 +236,10 @@ body::after {
   background: transparent;
   cursor: pointer;
   transition:
-    color 0.25s ease,
-    border-color 0.25s ease,
-    background-color 0.25s ease,
-    transform 0.12s ease;
+    color var(--duration-base) ease,
+    border-color var(--duration-base) ease,
+    background-color var(--duration-base) ease,
+    transform var(--duration-fast) ease;
 }
 
 .btn:active {
@@ -305,6 +304,7 @@ body::after {
 /* Text field: contained, calm, unmistakably interactive. */
 .field {
   width: 100%;
+  min-height: 2.75rem;
   background: var(--paper-raised);
   border: 1px solid var(--rule-strong);
   border-radius: 3px;
@@ -356,6 +356,51 @@ body::after {
   font-family: var(--font-sans);
   font-size: 0.8125rem;
   color: var(--ink-faint);
+}
+
+/* Newsletter account states replace the input without a layout jump. */
+.newsletter-account-note {
+  border-block: 1px solid var(--rule);
+  padding-block: 1.15rem;
+  animation: account-state-in var(--duration-slow) var(--ease-settle) both;
+}
+
+.newsletter-placeholder {
+  position: relative;
+  min-height: 5.5rem;
+  overflow: hidden;
+  border-block: 1px solid var(--rule);
+}
+
+.newsletter-placeholder::before,
+.newsletter-placeholder span {
+  content: "";
+  position: absolute;
+  left: 0;
+  height: 0.55rem;
+  border-radius: 1px;
+  background: color-mix(in oklab, var(--ink-faint) 14%, transparent);
+}
+
+.newsletter-placeholder::before {
+  top: 1.25rem;
+  width: 76%;
+}
+
+.newsletter-placeholder span {
+  top: 2.45rem;
+  width: 48%;
+}
+
+@keyframes account-state-in {
+  from {
+    opacity: 0.72;
+    transform: translateY(0.35rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 /* The recurring mark: hairline — bronze diamond — hairline. */
@@ -652,17 +697,37 @@ article figure img {
 }
 
 .reveal {
-  animation: rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: rise var(--duration-slow) var(--ease-out) both;
 }
 
 .reveal-late {
   animation: rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.14s both;
 }
 
-.reveal-1 { animation: rise 0.65s cubic-bezier(0.22, 1, 0.36, 1) both; }
-.reveal-2 { animation: rise 0.65s cubic-bezier(0.22, 1, 0.36, 1) 0.12s both; }
-.reveal-3 { animation: rise 0.65s cubic-bezier(0.22, 1, 0.36, 1) 0.26s both; }
-.reveal-4 { animation: rise 0.65s cubic-bezier(0.22, 1, 0.36, 1) 0.4s both; }
+.reveal-1 { animation: hero-kicker 0.48s var(--ease-out) both; }
+.reveal-2 { animation: hero-title 0.76s var(--ease-settle) 0.08s both; }
+.reveal-3 { animation: hero-copy 0.62s var(--ease-out) 0.24s both; }
+.reveal-4 { animation: hero-actions 0.58s var(--ease-out) 0.38s both; }
+
+@keyframes hero-kicker {
+  from { opacity: 0.68; letter-spacing: 0.29em; }
+  to { opacity: 1; letter-spacing: 0.22em; }
+}
+
+@keyframes hero-title {
+  from { opacity: 0.78; transform: translateY(0.8rem) scale(0.992); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes hero-copy {
+  from { opacity: 0.68; transform: translateY(0.45rem); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes hero-actions {
+  from { opacity: 0.7; transform: translateY(0.3rem); }
+  to { opacity: 1; transform: none; }
+}
 
 /* Scroll-driven reveal: progressive enhancement, zero JavaScript.
    The from-state keeps a legibility floor — content can drift and dim,
@@ -726,10 +791,6 @@ article figure img {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  body::after {
-    display: none;
-  }
-
   .hero-wash::before {
     animation: none !important;
   }
@@ -746,6 +807,12 @@ article figure img {
     transform: none !important;
   }
 
+  .account-shell,
+  .newsletter-account-note,
+  .account-loading {
+    animation: none !important;
+  }
+
   *,
   ::before,
   ::after {
@@ -754,6 +821,12 @@ article figure img {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+footer nav a {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
 }
 
 /* ------------------------------------------------------------------ */
@@ -778,9 +851,12 @@ article figure img {
 
 /* Navigation links draw their underline in, rather than changing color. */
 .nav-link {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
   color: var(--ink-muted);
   text-decoration: none;
-  padding-bottom: 3px;
+  padding: 3px 0.1rem;
   background-image: linear-gradient(currentColor, currentColor);
   background-size: 0% 1px;
   background-repeat: no-repeat;
@@ -832,6 +908,111 @@ article figure img {
   color: var(--ink);
   background-size: 100% 1px;
   background-image: linear-gradient(var(--accent), var(--accent));
+}
+
+/* ------------------------------------------------------------------ */
+/* Reader account — a ledger, not a dashboard of nested cards.         */
+/* ------------------------------------------------------------------ */
+
+.account-shell {
+  animation: account-page-in 0.7s var(--ease-settle) both;
+}
+
+@keyframes account-page-in {
+  from { opacity: 0.76; transform: translateY(0.55rem); }
+  to { opacity: 1; transform: none; }
+}
+
+.account-ledger {
+  margin-top: clamp(2.75rem, 7vw, 4.5rem);
+  border-top: 1px solid var(--rule-strong);
+}
+
+.account-ledger > div {
+  display: grid;
+  gap: 0.45rem;
+  padding-block: 1.15rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.account-ledger dt {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.account-ledger dd {
+  color: var(--ink-muted);
+}
+
+.account-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  color: var(--ink-muted);
+}
+
+.account-status::before {
+  content: "";
+  width: 0.5rem;
+  height: 0.5rem;
+  border: 1px solid var(--ink-faint);
+  border-radius: 50%;
+}
+
+.account-status--active::before {
+  border-color: var(--accent);
+  background: var(--accent);
+  box-shadow: 0 0 0 4px color-mix(in oklab, var(--accent) 11%, transparent);
+}
+
+.account-subscription {
+  display: grid;
+  gap: 1.75rem;
+  margin-top: clamp(2.5rem, 6vw, 4rem);
+  padding-block: clamp(1.75rem, 4vw, 2.5rem);
+  border-block: 1px solid var(--rule-strong);
+}
+
+.account-actions {
+  align-self: center;
+}
+
+.account-loading {
+  width: min(100%, 40rem);
+  min-height: 22rem;
+  border-block: 1px solid var(--rule);
+  background: linear-gradient(
+    105deg,
+    transparent 30%,
+    color-mix(in oklab, var(--accent) 6%, transparent) 48%,
+    transparent 66%
+  );
+  background-size: 220% 100%;
+  animation: account-loading 1.6s ease-in-out infinite;
+}
+
+@keyframes account-loading {
+  from { background-position: 100% 0; }
+  to { background-position: -100% 0; }
+}
+
+@media (min-width: 40rem) {
+  .account-ledger > div {
+    grid-template-columns: minmax(9rem, 0.42fr) 1fr;
+    align-items: baseline;
+    gap: 2rem;
+  }
+
+  .account-subscription {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 3rem;
+  }
 }
 
 /* ------------------------------------------------------------------ */
@@ -892,7 +1073,6 @@ article figure img {
     color: #000;
   }
 
-  body::after,
   .masthead nav,
   .reading-ribbon,
   .hero-wash::before,

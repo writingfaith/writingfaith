@@ -4,8 +4,11 @@ import { notifyNewEssay } from "@/lib/newsletter/broadcast";
 import { client } from "@/lib/sanity/client";
 import { recentlyPublishedArticlesQuery } from "@/lib/sanity/queries";
 
-/** Generous versus the cron cadence in vercel.json — a safety margin, not a precise window. */
-const WINDOW_MS = 3 * 60 * 60 * 1000;
+/**
+ * Eight daily opportunities to recover from a transient Resend or webhook
+ * failure.
+ */
+const WINDOW_MS = 8 * 24 * 60 * 60 * 1000;
 
 /**
  * Scheduled-essay safety net. The publish webhook fires when an author
